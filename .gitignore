@@ -6,6 +6,7 @@
 node_modules/
 .next/
 out/
+out-daily/
 dist/
 coverage/
 *.tsbuildinfo

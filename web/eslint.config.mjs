@@ -11,7 +11,7 @@ const except = (...keep) => ALL.filter((d) => !keep.includes(d));
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "playwright-report/**", "test-results/**"]),
+  globalIgnores([".next/**", "out/**", "out-daily/**", "build/**", "next-env.d.ts", "playwright-report/**", "test-results/**"]),
   {
     rules: {
       // No server code and no third-party hosts (CLAUDE.md, ARCHITECTURE.md §6).
