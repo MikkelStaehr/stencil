@@ -12,11 +12,11 @@ A desktop wizard where the owner makes a project's design and UX decisions: prof
 ## Commands
 Planned; they exist once slice 1, step 1 has scaffolded `web/`. Run them from `web/`.
 - dev: `pnpm dev`   build: `pnpm build`   lint: `pnpm lint`   typecheck: `pnpm typecheck`
-- test: `pnpm test`   e2e: `pnpm e2e`
+- test: `pnpm test`   e2e: `pnpm e2e`   serve (the user's daily instance): `pnpm serve`
 - **Run & screenshot:** use the `run-web` skill (`.claude/skills/run-web/`). Never invent a new screenshot method.
 
 ## Environment
-- Ports: **3000 = the user's dev server, 3110 = design-wizard's own agent port** (each project has its own; run-web, serve-out and Playwright all use 3110). Agents never touch 3000 or another project's port, and never stop another project's server.
+- Ports: **3000 = the user's dev server, 3110 = design-wizard's own agent port** (each project has its own; run-web, serve-out and Playwright all use 3110). **3210 = the user's daily instance** (`pnpm serve`: static `out/` on 127.0.0.1). Agents never touch 3000, 3210 or another project's port, and never stop another project's server. The daily instance serves the same `out/`, so an agent's `pnpm build` shows up there on the next reload.
 - Stop every server you started before the session ends.
 - `PYTHONIOENCODING=utf-8` is set. Write commit messages via a file (`git commit -F`), not inline quoting.
 
