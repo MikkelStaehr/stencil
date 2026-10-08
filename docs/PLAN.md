@@ -80,6 +80,8 @@ Ideas only, no code yet (user, 2026-10-02). Each becomes a slice in § Slices wh
 - **More palettes:** "Show 3 new" steps through strategies (monochrome, analogous, complementary, triadic, muted, bold), still 3 side by side. Every palette offered still passes AA (AC7).
 - **Colours from an image:** upload an image or logo, extract its 5–6 dominant colours in the browser (nothing is sent anywhere), and pick one as the brand colour.
 - **Fonts:** the user's visual assessment of the 8 families (on `?step=visual.fontPair`).
+- **Design team sparring per step** (user, 2026-10-08): the design team gives input at each step, and the reasoning behind each decision is stored in the project file.
+- **The name Stencil in the app, and a new file extension** instead of `.dwproj.json` (user, 2026-10-08). **Contract change:** project file schema version bump, the export provenance line ("Design Wizard", `design/<slug>.dwproj.json`), golden files and the `*.dwproj.json` gitignore. Mainframe's v0.2 Design tab validates `design/<slug>.dwproj.json`, so it has to change in step.
 
 ## Domain assumptions
 
