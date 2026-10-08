@@ -82,6 +82,15 @@ Ideas only, no code yet (user, 2026-10-02). Each becomes a slice in § Slices wh
 - **Fonts:** the user's visual assessment of the 8 families (on `?step=visual.fontPair`).
 - **Design team sparring per step** (user, 2026-10-08): the design team gives input at each step, and the reasoning behind each decision is stored in the project file.
 - **The name Stencil in the app, and a new file extension** instead of `.dwproj.json` (user, 2026-10-08). **Contract change:** project file schema version bump, the export provenance line ("Design Wizard", `design/<slug>.dwproj.json`), golden files and the `*.dwproj.json` gitignore. Mainframe's v0.2 Design tab validates `design/<slug>.dwproj.json`, so it has to change in step.
+- **Colour blindness simulation** on palettes.
+- **Brand board export:** one page that can be shown to a client.
+- **Font library:** open licences only (Fontsource/Google Fonts), self-hosted, with categories, suggested font pairs, a preview in the project's own text, and a glyph check (including æøå) shown per font.
+
+## v0.3 backlog
+
+Ideas only, no code yet (user, 2026-10-08). Needs Mainframe's server.
+
+- **Import a website:** Mainframe renders the page headless and reads the colours, fonts, sizes, radius and spacing it uses. Stencil proposes a palette, type scale and direction as a starting point. Licensed fonts are identified, never copied, and the nearest open alternative is proposed. Only the user's own sites and client sites.
 
 ## Domain assumptions
 
