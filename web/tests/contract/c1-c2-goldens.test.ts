@@ -57,6 +57,6 @@ describe("C1/C2 goldens", () => {
     const md = readGolden("harbour", "DESIGN.md");
     const markers = md.split("\n").filter((l) => l.includes("open: design-lead") && l.startsWith(">"));
     expect(markers.length).toBeGreaterThanOrEqual(10);
-    for (const m of markers) expect(m).toBe("> **open: design-lead** – not decided in Design Wizard.");
+    for (const m of markers) expect(m).toBe("> **open: design-lead** – not decided in Stencil.");
   });
 });

@@ -78,7 +78,7 @@ export function WizardShell() {
   return (
     <div className="min-h-dvh min-[761px]:grid min-[761px]:grid-cols-[200px_minmax(0,1fr)] min-[1101px]:grid-cols-[232px_minmax(0,1fr)_340px]">
       <header className="flex min-h-11 items-center justify-between border-b border-dw-line px-4 min-[761px]:hidden">
-        <span className="font-mono text-label font-medium tracking-[0.08em] uppercase">Design Wizard</span>
+        <span className="font-mono text-label font-medium tracking-[0.08em] uppercase">Stencil</span>
         <span className="flex items-center gap-3">
           <span className="font-mono text-label text-dw-text-muted">
             Step {step.number} of {STEPS.length}

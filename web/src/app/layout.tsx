@@ -17,7 +17,7 @@ const csp = [
 ].join("; ");
 
 export const metadata: Metadata = {
-  title: "Design Wizard",
+  title: "Stencil",
   description: "Make a project's design and UX decisions, then export them for the dev team.",
 };
 

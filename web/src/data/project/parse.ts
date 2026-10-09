@@ -122,10 +122,10 @@ export function parse(text: string): ParseResult {
     return { ok: false, errors: [jsonSyntax(text, err)] };
   }
   if (!isObj(raw)) {
-    return { ok: false, errors: [{ path: "", code: "not-object", message: "The file must contain one JSON object. Open a Design Wizard project file." }] };
+    return { ok: false, errors: [{ path: "", code: "not-object", message: "The file must contain one JSON object. Open a Stencil project file." }] };
   }
   if (raw.format !== FORMAT) {
-    return { ok: false, errors: [{ path: "format", code: "format", message: `This is not a Design Wizard project file (format must be "${FORMAT}"). Open a .dwproj.json file.` }] };
+    return { ok: false, errors: [{ path: "format", code: "format", message: `This is not a Stencil project file (format must be "${FORMAT}"). Open a .dwproj.json file.` }] };
   }
   const migrated = migrate(raw);
   if (!migrated.ok) return { ok: false, errors: [migrated.error] };

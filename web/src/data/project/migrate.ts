@@ -12,7 +12,7 @@ export function migrate(raw: Record<string, unknown>): { ok: true; value: Record
       path: "schemaVersion",
       code: "schema-version",
       message: newer
-        ? `This file was saved by a newer Design Wizard (schema ${version}). Open it in that version.`
+        ? `This file was saved by a newer version of Stencil (schema ${version}). Open it in that version.`
         : `schemaVersion must be ${SCHEMA_VERSION}. Found ${JSON.stringify(version) ?? "nothing"}.`,
     },
   };

@@ -16,7 +16,7 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
     <nav aria-label="Wizard steps" className="flex h-full flex-col gap-3.5 border-r border-dw-line px-3 py-4">
       <p className="flex min-w-0 items-center gap-2 px-1 font-mono text-small font-medium tracking-[0.04em] uppercase">
         <span aria-hidden="true" className="inline-block size-3 shrink-0 border-[1.5px] border-dw-text" />
-        <span className="truncate">Design Wizard{productName ? ` · ${productName}` : ""}</span>
+        <span className="truncate">Stencil{productName ? ` · ${productName}` : ""}</span>
       </p>
       <ol className="flex flex-col">
         {STEPS.map((step) => {

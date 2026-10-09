@@ -9,26 +9,26 @@
 - **Notes:** Booking tool for small physiotherapy clinics. Fictional sample project.
 
 **Primary users & context**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 **Locale**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 **References**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 **Pattern packs**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 # Part B – Direction (per project)
 
 ## Personality
 
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Signature element(s)
 
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Type
 
@@ -39,7 +39,7 @@
 - **Loading:** Self-host the vendored Fontsource files (`@fontsource/sora`, `@fontsource/inter`; latin subset; SIL OFL 1.1, keep each family's OFL.txt next to its files) with `next/font/local`, exposing `--font-display-face` and `--font-text-face`. Alternative only where Google Fonts is reachable: `next/font/google`.
 
 **Numerals**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Colour
 
@@ -122,17 +122,17 @@
 ```
 
 **Accent usage**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Shape & depth
 
 - **Radius:** 8px
 
 **Borders vs. shadows**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 **Elevation levels**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Space & density
 
@@ -141,16 +141,16 @@
 - **Density:** compact
 
 **Max content width**
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Motion
 
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Iconography & imagery
 
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
 
 ## Project rules
 
-> **open: design-lead** – not decided in Design Wizard.
+> **open: design-lead** – not decided in Stencil.
