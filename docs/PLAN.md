@@ -74,7 +74,7 @@ The UX laws and the font catalogue are **static typed content in the repo**, cha
 
 ## v0.2 backlog
 
-Ideas only, no code yet (user, 2026-10-02). Each becomes a slice in § Slices when the user gives the go. Diff pins are also planned for v0.2 (see Cut from v0.1).
+Ideas only, no code yet (user, 2026-10-02). Each becomes a slice in § Slices when the user gives the go. Diff pins are also planned for v0.2 (see Cut from v0.1). The items dated 2026-10-09 come from an analysis of usefulasfuck.com.
 
 - **Brand colour:** the swatch shows the colour live as soon as the hex is valid, with a hint that Enter applies it.
 - **More palettes:** "Show 3 new" steps through strategies (monochrome, analogous, complementary, triadic, muted, bold), still 3 side by side. Every palette offered still passes AA (AC7).
@@ -83,8 +83,13 @@ Ideas only, no code yet (user, 2026-10-02). Each becomes a slice in § Slices wh
 - **Design team sparring per step** (user, 2026-10-08): the design team gives input at each step, and the reasoning behind each decision is stored in the project file.
 - **The name Stencil in the app, and a new file extension** instead of `.dwproj.json` (user, 2026-10-08). **Contract change:** project file schema version bump, the export provenance line ("Design Wizard", `design/<slug>.dwproj.json`), golden files and the `*.dwproj.json` gitignore. Mainframe's v0.2 Design tab validates `design/<slug>.dwproj.json`, so it has to change in step.
 - **Colour blindness simulation** on palettes.
-- **Brand board export:** one page that can be shown to a client.
-- **Font library:** open licences only (Fontsource/Google Fonts), self-hosted, with categories, suggested font pairs, a preview in the project's own text, and a glyph check (including æøå) shown per font.
+- **Brand board export:** one page that can be shown to a client. Extended (user, 2026-10-09) into a **brand manual export** as PDF, SVG and PPTX. **Open:** PDF and PPTX need new dependencies, each with a one-line justification.
+- **Font library:** open licences only (Fontsource/Google Fonts), self-hosted, with categories, suggested font pairs, a preview in the project's own text, and a glyph check (including æøå) shown per font. Added (user, 2026-10-09): search (open licences only), upload your own fonts (they stay in the browser), a preview in real contexts (poster, article, hero, social post), and an explanation of why a pair works. This brings back font upload and Google Fonts search from Cut from v0.1. **Open:** search must not break "no third-party requests" (search a committed catalogue, or fetch at build time only), and an uploaded font has no catalogue id, which the project file (ids only, an unknown id is a loud error) has to handle.
+- **Colour roles** (user, 2026-10-09): Hero, Accent, CTA, CTA on dark, light neutral and dark neutral, with a harmony check and fix suggestions that keep the hue. **Contract change:** new decisions in the project file and new roles in tokens.json and Part B (schema version bumps, golden files).
+- **Shades 50–950** per colour in tokens.json (user, 2026-10-09). **Contract change:** tokens.json schema version bump and golden files.
+- **Type scale** (user, 2026-10-09): separate desktop and mobile scales (base + ratio), fluid `clamp()` in the CSS block of the exported DESIGN.md (there is no separate CSS export), a line-length check (45–75 characters) and a WCAG 1.4.12 text-spacing check. **Contract change:** project file, tokens.json and golden files.
+- **Contrast matrix** for every text/background pair, with a "Fix" button that keeps the hue (user, 2026-10-09). This brings back "Apply fix" from Cut from v0.1.
+- **Choices shareable as a URL** (user, 2026-10-09). **Open:** the app is local only and single-user, so a URL opens only on a machine that runs Stencil. The URL is a new serialisation of the project file, so it goes through the data layer and the parser and carries a schema version.
 
 ## v0.3 backlog
 
