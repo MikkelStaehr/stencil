@@ -41,7 +41,7 @@ function BrandField({ brandHex }: { brandHex: string | null }) {
           spellCheck={false}
           aria-invalid={error !== null}
           aria-describedby={error ? "brand-hex-error" : undefined}
-          className="h-11 w-full bg-transparent font-mono text-body font-medium outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-accent placeholder:text-dw-text-muted"
+          className="h-11 w-full bg-transparent font-mono text-body font-medium outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus placeholder:text-dw-text-muted"
         />
       </div>
       {error && (

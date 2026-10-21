@@ -12,6 +12,7 @@ import { PreviewStep } from "./steps/preview/PreviewStep";
 import { ExportStep } from "./steps/export/ExportStep";
 import { OpenedNotice } from "./OpenedNotice";
 import { OpenProjectButton } from "./OpenProjectButton";
+import { ThemeToggle } from "./ThemeToggle";
 import { LivePreview } from "./LivePreview";
 import type { ProfileStop } from "./steps/profile/model";
 
@@ -77,16 +78,17 @@ export function WizardShell() {
 
   return (
     <div className="min-h-dvh min-[761px]:grid min-[761px]:grid-cols-[200px_minmax(0,1fr)] min-[1101px]:grid-cols-[232px_minmax(0,1fr)_340px]">
-      <header className="flex min-h-11 items-center justify-between border-b border-dw-line px-4 min-[761px]:hidden">
+      <header className="flex min-h-11 flex-wrap items-center justify-between gap-y-2 border-b border-dw-line bg-dw-rail px-4 min-[761px]:hidden">
         <span className="font-mono text-label font-medium tracking-[0.08em] uppercase">Stencil</span>
         <span className="flex items-center gap-3">
           <span className="font-mono text-label text-dw-text-muted">
             Step {step.number} of {STEPS.length}
           </span>
+          <ThemeToggle compact />
           {hydrated && <OpenProjectButton label="Open file" buttonClass="px-3" />}
         </span>
       </header>
-      <aside className="hidden min-[761px]:block min-[761px]:row-span-2 min-[1101px]:row-span-1">
+      <aside className="hidden bg-dw-rail min-[761px]:block min-[761px]:row-span-2 min-[1101px]:row-span-1">
         <Rail project={project} stop={stop} onPick={setPicked} />
       </aside>
       <main className={`min-w-0 px-4 pt-5 pb-8 min-[761px]:px-6 ${current === "preview" ? "min-[1101px]:col-span-2" : ""}`}>
@@ -98,7 +100,7 @@ export function WizardShell() {
         ) : (
           <>
         {errors.length > 0 && (
-          <section role="alert" aria-labelledby="file-errors-title" className="mb-5 border border-dw-ctl bg-dw-surface px-4 py-3">
+          <section role="alert" aria-labelledby="file-errors-title" className="mb-5 rounded-xl border border-dw-ctl bg-dw-surface px-4 py-3">
             <h2 id="file-errors-title" tabIndex={-1} className="font-medium">
               The project file could not be opened: {errors.length} {errors.length === 1 ? "problem" : "problems"}
             </h2>
@@ -114,7 +116,7 @@ export function WizardShell() {
           </section>
         )}
         {saveFailed && (
-          <p role="status" className="mb-5 border border-dw-ctl bg-dw-surface px-4 py-2 text-small">
+          <p role="status" className="mb-5 rounded-xl border border-dw-ctl bg-dw-surface px-4 py-2 text-small">
             This browser did not save your last change. Keep the tab open until you can download the project file.
           </p>
         )}
@@ -134,7 +136,7 @@ export function WizardShell() {
       {hydrated && current !== "preview" && (
       <section
         aria-labelledby="preview-label"
-        className="border-t border-dw-line px-4 py-5 min-[761px]:col-start-2 min-[761px]:px-6 min-[1101px]:col-start-3 min-[1101px]:row-start-1 min-[1101px]:border-t-0 min-[1101px]:border-l min-[1101px]:px-4"
+        className="border-t border-dw-line bg-dw-aside px-4 py-5 min-[761px]:col-start-2 min-[761px]:px-6 min-[1101px]:col-start-3 min-[1101px]:row-start-1 min-[1101px]:border-t-0 min-[1101px]:border-l min-[1101px]:px-4"
       >
         <LivePreview visual={visual} productName={productName} />
       </section>

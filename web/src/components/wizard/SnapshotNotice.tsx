@@ -37,7 +37,7 @@ export function SnapshotNotice() {
     const message = recomputedBy !== null ? `Changing ${recomputedBy} recomputed every stored value.` : done;
     if (message === null) return null;
     return (
-      <div ref={resultRef} tabIndex={-1} role="status" className="mb-5 flex flex-wrap items-center gap-3 border border-dw-ctl bg-dw-surface px-4 py-3 text-small">
+      <div ref={resultRef} tabIndex={-1} role="status" className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-dw-line bg-dw-surface px-4 py-3 text-small">
         <span>{message}</span>
         {previousResolved !== null && (
           <button
@@ -57,9 +57,9 @@ export function SnapshotNotice() {
 
   const diff = differences(project);
   const total = diff.reduce((n, [, c]) => n + c, 0);
-  const buttonClass = "inline-flex min-h-11 items-center justify-center rounded-sm border border-dw-ctl bg-dw-surface px-4 font-medium hover:bg-[var(--dw-hover)]";
+  const buttonClass = "inline-flex min-h-11 items-center justify-center rounded-sm border border-dw-ctl bg-dw-surface px-4 font-medium transition-colors duration-(--duration-fast) ease-standard hover:bg-dw-hover";
   return (
-    <section role="region" aria-labelledby="snapshot-title" className="mb-5 border border-dw-ctl bg-dw-surface px-4 py-3">
+    <section role="region" aria-labelledby="snapshot-title" className="mb-5 rounded-xl border border-dw-line bg-dw-surface px-4 py-3">
       <h2 id="snapshot-title" className="font-medium">
         Stored values differ from the current algorithm: keep or recompute
       </h2>

@@ -10,7 +10,7 @@ import { LAWS } from "@/content/laws";
 
 const FONTS_DIR = join(__dirname, "..", "..", "public", "fonts");
 /** The wizard's own chrome fonts: shipped, but never project options. */
-const CHROME = ["geist", "ibm-plex-mono"];
+const CHROME = ["geist", "geist-mono"];
 
 describe("laws", () => {
   test("ids are unique kebab-case", () => {

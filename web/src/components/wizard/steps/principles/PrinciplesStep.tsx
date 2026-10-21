@@ -303,11 +303,11 @@ export function PrinciplesStep({ project, onMove }: { project: ProjectFile; onMo
             aria-disabled={principles === null || undefined}
             onClick={primary}
             className={`inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm px-4 font-semibold whitespace-nowrap min-[761px]:w-auto ${
-              principles === null ? "border border-dw-ctl bg-dw-surface text-dw-text-muted" : "bg-dw-accent text-dw-on-accent"
+              principles === null ? "border border-dw-ctl bg-dw-surface text-dw-text-muted" : "bg-primary text-primary-foreground"
             }`}
           >
             {principles === null ? "Choose at least one law" : n === 0 ? "Continue with no rules" : `Continue with ${n} ${n === 1 ? "rule" : "rules"}`}
-            {principles !== null && <kbd className="border-dw-on-accent bg-transparent text-dw-on-accent">Enter</kbd>}
+            {principles !== null && <kbd className="border-primary-foreground bg-transparent text-primary-foreground">Enter</kbd>}
           </button>
         </div>
       </div>
@@ -363,10 +363,10 @@ function LawCard(props: {
   return (
     <li
       data-law={law.id}
-      className={`grid grid-cols-1 border border-dw-line bg-dw-surface p-4 ${
+      className={`grid grid-cols-1 rounded-xl border border-dw-line bg-dw-surface p-4 ${
         demos ? "@min-[640px]:grid-cols-[minmax(0,1fr)_312px] @min-[640px]:gap-5" : ""
       } ${
-        selected ? "shadow-[inset_3px_0_0_var(--dw-accent)]" : ""
+        selected ? "shadow-[inset_3px_0_0_var(--dw-text)]" : ""
       }`}
     >
       <div className="min-w-0">
@@ -383,11 +383,11 @@ function LawCard(props: {
           />
           <span
             aria-hidden="true"
-            className={`relative inline-flex size-[18px] shrink-0 items-center justify-center rounded-[2px] border ${
-              selected ? "border-dw-accent bg-dw-accent" : "border-dw-ctl bg-dw-surface"
+            className={`relative inline-flex size-[18px] shrink-0 items-center justify-center rounded-2xs border ${
+              selected ? "border-dw-text bg-dw-text" : "border-dw-ctl bg-dw-surface"
             }`}
           >
-            {selected && <span className="mb-[3px] block h-[10px] w-[5px] rotate-45 border-r-2 border-b-2 border-dw-on-accent" />}
+            {selected && <span className="mb-[3px] block h-[10px] w-[5px] rotate-45 border-r-2 border-b-2 border-dw-bg" />}
           </span>
           <span id={`${uid}-name`} className="min-w-0 flex-1 font-semibold">
             {law.name}
@@ -414,7 +414,7 @@ function LawCard(props: {
             const error = props.errors[k];
             const id = fieldId(k);
             return (
-              <div key={p.key} className={`mt-3 border-l-2 pl-2.5 ${error ? "border-l-dw-accent" : "border-l-transparent"}`}>
+              <div key={p.key} className={`mt-3 border-l-2 pl-2.5 ${error ? "border-l-dw-text" : "border-l-transparent"}`}>
                 <label htmlFor={id} className={`${LABEL} text-dw-text`}>
                   {p.label}
                 </label>
@@ -430,7 +430,7 @@ function LawCard(props: {
                     onKeyDown={(e) => props.onFieldKey(e, p)}
                     aria-invalid={error ? true : undefined}
                     aria-describedby={`${id}-range${error ? ` ${id}-msg` : ""}`}
-                    className="h-11 w-24 rounded-[2px] border border-dw-ctl bg-dw-bg px-3 text-body tabular-nums"
+                    className="h-11 w-24 rounded-sm border border-dw-ctl bg-dw-bg px-3 text-body tabular-nums"
                   />
                   {UNIT_SUFFIX[p.unit] !== "" && <span className="font-mono text-label text-dw-text-muted">{UNIT_SUFFIX[p.unit]}</span>}
                   <span id={`${id}-range`} className="ml-2 font-mono text-label text-dw-text-muted tabular-nums">

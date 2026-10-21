@@ -12,11 +12,11 @@ export const geist = localFont({
   display: "swap",
 });
 
-export const plexMono = localFont({
+export const geistMono = localFont({
   src: [
-    { path: "../../public/fonts/ibm-plex-mono/ibm-plex-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/ibm-plex-mono/ibm-plex-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/geist-mono/geist-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/geist-mono/geist-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
   ],
-  variable: "--font-plex-mono",
+  variable: "--font-geist-mono",
   display: "swap",
 });

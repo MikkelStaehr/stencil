@@ -55,7 +55,7 @@ export function ProfileStep({ stop, project, onMove }: { stop: ProfileStop; proj
       </h1>
       <p className="mt-1 max-w-[60ch] text-dw-text-muted">{meta.lead(whose)}</p>
 
-      <div key={stop} className="animate-in fade-in duration-[120ms] ease-out">
+      <div key={stop}>
         {stop === "profile.identity" && <IdentityStop profile={project.profile} visual={project.visual} onDone={() => onMove("profile.platform")} />}
         {stop === "profile.platform" && <PlatformStop project={project} onChosen={() => onMove("profile.library")} />}
         {stop === "profile.library" && <LibraryStop project={project} onChosen={() => onMove("principles")} />}

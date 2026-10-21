@@ -92,7 +92,7 @@ export function IdentityStop({ profile, visual, onDone }: { profile: Profile; vi
   };
 
   const controlClass =
-    "min-h-11 w-full rounded-[2px] border border-dw-ctl bg-dw-surface px-3 py-2.5 text-body placeholder:text-dw-text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus";
+    "min-h-11 w-full rounded-sm border border-dw-ctl bg-dw-surface px-3 py-2.5 text-body placeholder:text-dw-text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus";
   const fieldProps = (f: Field) => ({
     id: `${uid}-${f}`,
     value: drafts[f],
@@ -165,10 +165,10 @@ export function IdentityStop({ profile, visual, onDone }: { profile: Profile; vi
         <p className="max-w-[56ch] text-dw-text-muted">Each field saves when you leave it. You can change them later.</p>
         <button
           type="submit"
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-dw-accent px-4 font-semibold whitespace-nowrap text-dw-on-accent min-[761px]:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground min-[761px]:w-auto"
         >
           Continue to platform
-          <kbd className="border-dw-on-accent bg-transparent text-dw-on-accent">Enter</kbd>
+          <kbd className="border-primary-foreground bg-transparent text-primary-foreground">Enter</kbd>
         </button>
       </div>
     </form>
@@ -196,7 +196,7 @@ function TextField({
   const n = draft.trim().length;
   const over = n - limit;
   return (
-    <div className={`-ml-3 border-l-2 pl-2.5 ${error ? "border-l-dw-accent" : "border-l-transparent"}`}>
+    <div className={`-ml-3 border-l-2 pl-2.5 ${error ? "border-l-dw-text" : "border-l-transparent"}`}>
       <div className="mb-1 flex items-baseline justify-between gap-3">
         <label htmlFor={`${uid}-${field}`} className="font-mono text-label font-medium tracking-[0.08em] uppercase">
           {label}

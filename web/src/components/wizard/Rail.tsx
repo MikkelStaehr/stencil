@@ -3,6 +3,7 @@ import type { ProjectFile } from "@/contracts/project";
 import { isDecided, openDecisions, stepOfStop, STEPS, SUB_KEYS, type StopId, type VisualKey } from "@/domain/decisions";
 import { OpenProjectButton } from "./OpenProjectButton";
 import { ShortcutLegend } from "./ShortcutLegend";
+import { ThemeToggle } from "./ThemeToggle";
 import { StopList, SubDecisionList } from "./SubDecisionList";
 import { profileDecidedCount, profileRows, type ProfileStop } from "./steps/profile/model";
 
@@ -15,7 +16,7 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
   return (
     <nav aria-label="Wizard steps" className="flex h-full flex-col gap-3.5 border-r border-dw-line px-3 py-4">
       <p className="flex min-w-0 items-center gap-2 px-1 font-mono text-small font-medium tracking-[0.04em] uppercase">
-        <span aria-hidden="true" className="inline-block size-3 shrink-0 border-[1.5px] border-dw-text" />
+        <span aria-hidden="true" className="inline-block size-3 shrink-0 rounded-2xs border-[1.5px] border-dw-accent" />
         <span className="truncate">Stencil{productName ? ` · ${productName}` : ""}</span>
       </p>
       <ol className="flex flex-col">
@@ -39,7 +40,15 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
                 isCurrent ? "border-l-2 border-l-dw-accent pl-2" : "pl-1"
               }`}
             >
-              <span className="font-mono text-label leading-5 text-dw-text-muted tabular-nums">{String(step.number).padStart(2, "0")}</span>
+              <span
+                className={
+                  isCurrent
+                    ? "inline-flex size-[22px] items-center justify-center rounded-xs bg-dw-accent-fill font-mono text-label font-medium text-dw-on-accent tabular-nums"
+                    : "font-mono text-label leading-5 text-dw-text-muted tabular-nums"
+                }
+              >
+                {String(step.number).padStart(2, "0")}
+              </span>
               <span className="flex min-w-0 flex-col">
                 <span className="font-medium">{step.title}</span>
                 <span className="text-small text-dw-text-muted">{summary}</span>
@@ -84,6 +93,7 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
           view={current === "preview"}
           exportEnter={current === "export" ? (openCount === 0 ? "Download all" : "Go to open decision") : undefined}
         />
+        <ThemeToggle />
       </div>
     </nav>
   );

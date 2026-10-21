@@ -35,8 +35,8 @@ export function StopList<Id extends string>({ rows, current, onPick }: { rows: S
               type="button"
               onClick={() => onPick(s.id)}
               aria-current={isCurrent ? "true" : undefined}
-              className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-sm px-1.5 text-left text-small transition-colors duration-[120ms] ease-out ${
-                isCurrent ? "bg-dw-surface font-medium text-dw-text outline outline-1 -outline-offset-1 outline-dw-ctl" : "text-dw-text-muted hover:bg-[var(--dw-hover)]"
+              className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-sm px-1.5 text-left text-small transition-colors duration-(--duration-fast) ease-standard ${
+                isCurrent ? "bg-dw-selected font-medium text-dw-text outline outline-1 -outline-offset-1 outline-dw-ctl" : "text-dw-text-muted hover:bg-dw-hover"
               }`}
             >
               <span className="min-w-0">

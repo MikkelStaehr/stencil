@@ -1,7 +1,7 @@
 import type { FontEntry } from "@/contracts/content";
 
 // Curated font catalogue (OFL-1.1, Fontsource latin woff2), approved 2026-10-01 from design/content-review.
-// The chrome's own fonts (geist, ibm-plex-mono) also live in public/fonts/ but are never project options.
+// The chrome's own fonts (geist, geist-mono) also live in public/fonts/ but are never project options.
 export const FONTS: readonly FontEntry[] = [
   {
     "id": "inter",

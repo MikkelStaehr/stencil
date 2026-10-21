@@ -50,7 +50,7 @@ export function VisualStep({ sub, visual, productName, onMove }: { sub: VisualKe
       </h1>
       <p className="mt-1 max-w-[60ch] text-dw-text-muted">{LEADS[sub](whose)}</p>
 
-      <div key={sub} className="animate-in fade-in duration-[120ms] ease-out">
+      <div key={sub}>
         {VIEWS[sub]({ visual, productName, onChoose })}
       </div>
 

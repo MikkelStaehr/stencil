@@ -258,10 +258,10 @@ export function ExportStep({ project, onMove }: { project: ProjectFile; onMove: 
           type="button"
           data-primary-action=""
           onClick={primary}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-dw-accent px-4 font-semibold whitespace-nowrap text-dw-on-accent min-[761px]:w-auto min-[761px]:shrink-0"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground min-[761px]:w-auto min-[761px]:shrink-0"
         >
           {blocked ? `Go to ${open[0].label}` : files ? "Download all 4 files" : "Download the project file"}
-          <kbd className="border-dw-on-accent bg-transparent text-dw-on-accent">Enter</kbd>
+          <kbd className="border-primary-foreground bg-transparent text-primary-foreground">Enter</kbd>
         </button>
       </div>
     </div>
@@ -274,7 +274,7 @@ function Meta({ line, at }: { line: string; at: string | undefined }) {
     <>
       {line}
       {at !== undefined && (
-        <span className="transition-opacity duration-[120ms] ease-out starting:opacity-0 motion-reduce:transition-none"> · downloaded {clockTime(at)}</span>
+        <span className="transition-opacity duration-(--duration-base) ease-out starting:opacity-0 motion-reduce:transition-none"> · downloaded {clockTime(at)}</span>
       )}
     </>
   );
@@ -318,7 +318,7 @@ function FileRow({
             Show text
             <Chevron className="group-open:rotate-90" />
           </summary>
-          <pre tabIndex={0} aria-label={`${name} text`} className="max-h-80 overflow-auto border border-dw-line bg-dw-surface p-3 font-mono text-label whitespace-pre">
+          <pre tabIndex={0} aria-label={`${name} text`} className="max-h-80 overflow-auto rounded-md border border-dw-line bg-dw-surface p-3 font-mono text-label whitespace-pre">
             {text}
           </pre>
         </details>

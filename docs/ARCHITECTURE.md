@@ -1,4 +1,4 @@
-# Architecture – Design Wizard v0.1
+# Architecture – Stencil (formerly Design Wizard)
 
 > **Status:** proposed 2026-10-01 by architect. **Nothing is built yet.** Scope: `docs/PLAN.md`. Exact formats: `docs/CONTRACTS.md`. Agents read this page instead of scanning the repo. Update it whenever the structure changes.
 
@@ -40,7 +40,7 @@ web/
 ├─ fixtures/              fictional *.project.json files, shared by the contract tests and ?fixture=
 ├─ src/
 │  ├─ contracts/          types only + schemas/*.schema.json (tokens, ux-rules). Mirrors CONTRACTS.md.
-│  ├─ lib/                stable-json.ts · slug.ts · md-escape.ts · format.ts (bytes, clock time) · utils.ts (cn) (imports nothing from src)
+│  ├─ lib/                stable-json.ts · slug.ts · md-escape.ts · format.ts (bytes, clock time) · utils.ts (cn) · theme.ts (chrome theme: THEME_BOOT pre-paint script, stencil.theme in localStorage, never in the project file) (imports nothing from src)
 │  ├─ content/            curated, changed by commit: laws.ts · fonts.ts (catalogue) · font-pairs.ts
 │  ├─ domain/             pure TS, no React, no DOM
 │  │  ├─ color/           hex.ts · contrast.ts · pairs.ts · palette.ts   (palette/contrast module)
@@ -70,7 +70,7 @@ web/
 │  ├─ app/                layout.tsx (CSP meta, chrome fonts) · page.tsx (the only route) · fonts.ts (next/font/local) · globals.css (chrome tokens + shadcn theme)
 │  └─ components/
 │     ├─ ui/              shadcn primitives, chrome theme only
-│     ├─ wizard/          WizardShell · Rail · ShortcutLegend · use-shortcuts · ContrastTable · LivePreview · preview-candidate ·
+│     ├─ wizard/          WizardShell · Rail · ThemeToggle (Dark / Light, slice 4b) · ShortcutLegend · use-shortcuts · ContrastTable · LivePreview · preview-candidate ·
 │     │                   SnapshotNotice · OpenedNotice · OpenProjectButton · SubDecisionList · ArrowText · classes (shared button classes)
 │     │  └─ steps/        profile · principles · visual/{font-pair,spacing,radius,palette,density} · preview · export/ExportStep
 │     ├─ plate/           Plate (crop marks, brackets, fixed size, loading/failed) · PlateGrid (radiogroup, 1/2/3) · demo-vars (DiffPins is planned for v0.2. Samples already carry data-v-part.)
@@ -128,7 +128,7 @@ Tests call these owners. The only independent re-implementation is a set of hand
 
 ## 5. Fonts: one copy per file
 
-- **Single source:** `web/public/fonts/<family-id>/`. It holds the Fontsource latin woff2 files under their original names, plus `OFL.txt` (the copyright line + the full OFL 1.1 text) for each family. This covers the chrome families (`geist`, `ibm-plex-mono`) and every catalogue family.
+- **Single source:** `web/public/fonts/<family-id>/`. It holds the Fontsource latin woff2 files under their original names, plus `OFL.txt` (the copyright line + the full OFL 1.1 text) for each family. This covers the chrome families (`geist`, `geist-mono`, the same as Mainframe since slice 4b) and every catalogue family.
 - **Chrome:** `src/app/fonts.ts` calls `next/font/local` with `src: '../../public/fonts/geist/…'`. The build emits its own hashed copy; the repo keeps one.
 - **Variants:** `fonts/loader.ts` builds `/fonts/<id>/<file>` from `content/fonts.ts` and loads only the weights the pair names. It registers each face as `"dwv-<id>"`, so a variant face can never match a chrome `font-family`.
 - **`design/directions/fonts/` stays** as the frozen mock's own copy. The two HTML records open standalone over `file://` with relative URLs. Nothing in `web/` reads `design/`, and the folder is never updated. Its drift is intended, because it is a dated record.
@@ -164,7 +164,7 @@ Tests call these owners. The only independent re-implementation is a set of hand
 
 | # | Decision | Where it lands |
 |---|---|---|
-| 1 | Light theme only. `deep` stays as a **project palette option** (the project's palette, not the wizard's theme) | `resolved.color.dark` is `null` in v1. `palette.ts` offers quiet / tinted / deep |
+| 1 | Light theme only (the project export; **the chrome is dark by default with a light alternative since slice 4b**, DESIGN.md Part B). `deep` stays as a **project palette option** (the project's palette, not the wizard's theme) | `resolved.color.dark` is `null` in v1. `palette.ts` offers quiet / tinted / deep |
 | 2 | Default target is Next.js + Tailwind v4 + shadcn/ui. tokens.json stays stack-agnostic, and **shadcn is an optional export layer** | `profile.componentLibrary` (`"shadcn"` default, or `"none"`). `export/shadcn-map.ts` runs only for shadcn; `export/css-vars.ts` handles the rest (CONTRACTS §4.2 and §4.2a) |
 | 3 | **"Apply fix" is cut.** Only passing palettes are offered, and ratios are shown | `palette.ts` filters to passing palettes. `visual.colorOverrides` stays `{}`. There is no `F` key |
 | 4 | Generic sample screen | One generic sample in `components/samples/` |

@@ -79,10 +79,10 @@ export function PreviewStep({ project, onMove }: { project: ProjectFile; onMove:
         type="button"
         data-primary-action=""
         onClick={() => onMove("export")}
-        className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-dw-accent px-4 font-semibold whitespace-nowrap text-dw-on-accent min-[761px]:w-auto"
+        className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground min-[761px]:w-auto"
       >
         Continue to export
-        <kbd className="border-dw-on-accent bg-transparent text-dw-on-accent">Enter</kbd>
+        <kbd className="border-primary-foreground bg-transparent text-primary-foreground">Enter</kbd>
       </button>
     </>
   );

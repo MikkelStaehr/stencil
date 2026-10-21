@@ -23,8 +23,8 @@ export function ContrastTable({ caption, results }: { caption: string; results: 
             <td className="py-0 text-right align-middle">{formatRatio(r.ratio)}</td>
             <td className="w-[52px] py-0 pl-2 align-middle">
               <span
-                className={`block w-11 rounded-sm py-0.5 text-center tracking-[0.04em] ${
-                  r.pass ? "border border-dw-line text-dw-text-muted" : "bg-dw-accent font-medium text-dw-on-accent"
+                className={`block w-11 rounded-full py-0.5 text-center tracking-[0.04em] ${
+                  r.pass ? "border border-dw-line text-dw-text-muted" : "bg-primary font-medium text-primary-foreground"
                 }`}
               >
                 {r.pass ? "PASS" : "FAIL"}

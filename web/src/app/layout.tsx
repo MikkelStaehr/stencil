@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { geist, plexMono } from "./fonts";
+import { THEME_BOOT } from "@/lib/theme";
+import { geist, geistMono } from "./fonts";
 import "./globals.css";
 
 // No request may leave the origin (CLAUDE.md). Dev needs eval and the HMR socket; production does not.
@@ -23,9 +24,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geist.variable} ${plexMono.variable}`}>
+    // Dark in the static HTML; THEME_BOOT applies the stored choice before first paint (no flicker), so the
+    // attribute may differ from the server's at hydration.
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${geist.variable} ${geistMono.variable}`}>
       <head>
         <meta httpEquiv="Content-Security-Policy" content={csp} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
       </head>
       <body>{children}</body>
     </html>

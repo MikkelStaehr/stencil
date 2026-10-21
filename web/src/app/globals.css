@@ -2,24 +2,59 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* `dark:` follows Stencil's own theme (data-theme on <html>), never the OS setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /*
- * Chrome theme from DESIGN.md Part B (Grading Suite, light only).
- * Chrome tokens are prefixed --dw-* in code because shadcn's --accent means "hover background",
- * while DESIGN.md's --accent is the black accent. Variants never read these: plates set --v-* inline.
- * Every grey is R=G=B: the chrome never carries a hue.
+ * Chrome theme from DESIGN.md Part B (Night shift, Stencil edition): Mainframe's family, dark by default.
+ * Chrome tokens are prefixed --dw-* in code because shadcn's --accent means "hover background".
+ * --dw-accent is the orange "you are here" and lives in the rail only. Variants never read these:
+ * plates set --v-* inline. Plates stay R=G=B in both themes.
+ * data-theme is set before first paint by lib/theme.ts THEME_BOOT; there is no prefers-color-scheme query.
  */
-:root {
-  --dw-bg: #e6e6e6;
-  --dw-surface: #f2f2f2;
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --dw-bg: #0c0c0e;
+  --dw-surface: #141417;
+  --dw-plate: #333333;
+  --dw-line: #1e1e23;
+  --dw-ctl: #6a6a76;
+  --dw-text: #ececee;
+  --dw-text-muted: #9a9aa2;
+  --dw-accent: #f07a3a;
+  --dw-accent-fill: #f07a3a;
+  --dw-on-accent: #0c0c0e;
+  --dw-focus: #7ea8ff;
+  --dw-hover: #17171b;
+  --dw-rail: #08080a;
+  --dw-aside: #101013;
+  --dw-selected: #1c1c20;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --dw-bg: #faf8f4;
+  --dw-surface: #ffffff;
   --dw-plate: #cccccc;
-  --dw-line: #cccccc;
-  --dw-ctl: #6b6b6b;
-  --dw-text: #141414;
-  --dw-text-muted: #4f4f4f;
-  --dw-accent: #000000;
-  --dw-on-accent: #ffffff;
-  --dw-focus: #000000;
-  --dw-hover: #dadada;
+  --dw-line: #e7e2da;
+  --dw-ctl: #857e74;
+  --dw-text: #1c1a17;
+  --dw-text-muted: #655f57;
+  --dw-accent: #a8430f;
+  --dw-accent-fill: #d45a1f;
+  --dw-on-accent: #1b1205;
+  --dw-focus: #1f5fd6;
+  --dw-hover: #f3efe9;
+  --dw-rail: #f1eee8;
+  --dw-aside: #f5f2ed;
+  --dw-selected: #ece7df;
+}
+
+:root {
+  /* Motion tokens (domain/motion.ts, slice 4a). */
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
 
   /* shadcn/ui mapping (DESIGN.md "shadcn/ui mapping"). Never the library default. */
   --background: var(--dw-bg);
@@ -28,22 +63,22 @@
   --card-foreground: var(--dw-text);
   --popover: var(--dw-surface);
   --popover-foreground: var(--dw-text);
-  --primary: var(--dw-accent);
-  --primary-foreground: var(--dw-on-accent);
+  --primary: var(--dw-text); /* ink-solid primary button, never orange */
+  --primary-foreground: var(--dw-bg);
   --secondary: var(--dw-surface);
   --secondary-foreground: var(--dw-text);
   --muted: var(--dw-surface);
   --muted-foreground: var(--dw-text-muted);
   --accent: var(--dw-hover);
   --accent-foreground: var(--dw-text);
-  --destructive: var(--dw-accent);
+  --destructive: var(--dw-text);
   --border: var(--dw-line);
   --input: var(--dw-ctl);
   --ring: var(--dw-focus);
-  --radius: 2px;
-  --sidebar: var(--dw-bg);
+  --radius: 10px;
+  --sidebar: var(--dw-rail);
   --sidebar-foreground: var(--dw-text);
-  --sidebar-primary: var(--dw-accent);
+  --sidebar-primary: var(--dw-accent-fill);
   --sidebar-primary-foreground: var(--dw-on-accent);
   --sidebar-accent: var(--dw-hover);
   --sidebar-accent-foreground: var(--dw-text);
@@ -89,29 +124,41 @@
   --color-dw-text-muted: var(--dw-text-muted);
   --color-dw-accent: var(--dw-accent);
   --color-dw-on-accent: var(--dw-on-accent);
+  --color-dw-accent-fill: var(--dw-accent-fill);
+  --color-dw-focus: var(--dw-focus);
+  --color-dw-hover: var(--dw-hover);
+  --color-dw-rail: var(--dw-rail);
+  --color-dw-aside: var(--dw-aside);
+  --color-dw-selected: var(--dw-selected);
 
   --font-sans: var(--font-geist), system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-heading: var(--font-geist), system-ui, sans-serif;
 
-  /* DESIGN.md type scale 11 / 12 / 13 / 25. No other sizes in the chrome. */
+  /* DESIGN.md type scale 11 / 12 / 14 / 30. No other sizes in the chrome. */
   --text-label: 0.6875rem;
-  --text-label--line-height: 1.45;
+  --text-label--line-height: 1.4545;
   --text-small: 0.75rem;
   --text-small--line-height: 1.5;
-  --text-body: 0.8125rem;
+  --text-body: 0.875rem;
   --text-body--line-height: 1.5;
-  --text-title: 1.5625rem;
+  --text-title: 1.875rem;
   --text-title--line-height: 1.2;
 
-  /* 2px for every chrome control; plates, panels and the rail use rounded-none. */
+  /* Mainframe family: 10px controls, 16px cards, 6px kbd, 3px small marks. Plates stay square (rounded-none). */
+  --radius-2xs: 3px;
+  --radius-xs: 6px;
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
-  --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
-  --radius-4xl: var(--radius);
+  --radius-lg: 16px;
+  --radius-xl: 16px;
+  --radius-2xl: 16px;
+  --radius-3xl: 16px;
+  --radius-4xl: 16px;
+
+  /* Motion easings (domain/motion.ts, slice 4a). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-standard: ease;
 
   /* No shadows anywhere in the chrome. */
   --shadow-*: initial;
@@ -137,7 +184,7 @@
     outline-offset: 2px;
   }
   kbd {
-    @apply inline-flex min-w-5 items-center justify-center rounded-sm border border-dw-ctl bg-dw-surface px-1 font-mono text-label font-medium leading-none;
+    @apply inline-flex min-w-5 items-center justify-center rounded-xs border border-dw-ctl bg-dw-surface px-1 font-mono text-label font-medium leading-none;
     height: 1.25rem;
   }
 }
@@ -153,7 +200,7 @@
 
 /*
  * Viewing plate (DESIGN.md signature element): --plate surround, 18px padding, 0 radius, four 12px
- * L-shaped crop marks (1px muted) inset 6px; selected = 16px, 2px black brackets. Chrome only:
+ * L-shaped crop marks (1px muted) inset 6px; selected = 16px, 2px brackets in the text colour. Chrome only:
  * nothing here reaches inside [data-v-root].
  */
 @layer components {
@@ -179,8 +226,8 @@
     height: 12px;
     border: 1px solid var(--dw-text-muted);
     transition:
-      border-color 120ms ease-out,
-      opacity 120ms ease-out;
+      border-color var(--duration-fast) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
   }
   .dw-plate::before {
     top: 6px;
@@ -212,7 +259,7 @@
   .dw-plate[aria-checked="true"] > .dw-cm::after {
     width: 16px;
     height: 16px;
-    border-color: var(--dw-accent);
+    border-color: var(--dw-text); /* selection is ink, never orange */
     border-width: 2px;
   }
   .dw-plate[aria-checked="true"]::before,

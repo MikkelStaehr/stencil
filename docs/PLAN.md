@@ -137,6 +137,7 @@ Every slice and task of the project, in order. Status is never written here; it 
 | 3g | Slices table, Slice commit line, team install and run-web merge | S |
 | 3h | The name Stencil in visible app and export text (not the strings Mainframe matches) | S |
 | 4a | Motion part A: motion tokens and section in DESIGN.md, seven motion laws, app patterns, INSPIRATION.md, run-web merge | M |
+| 4b | Chrome family: Stencil joins Mainframe's look (dark by default, Dark/Light toggle, Geist Mono, orange only in the rail); plates and preview unchanged | M |
 
 ## Plan (one commit per step; no building until the user says go)
 

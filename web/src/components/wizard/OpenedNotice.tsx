@@ -21,7 +21,7 @@ export function OpenedNotice() {
 
   if (openNotice.undone) {
     return (
-      <section role="status" aria-labelledby="opened-title" className="mb-5 border border-dw-ctl bg-dw-surface px-4 py-3">
+      <section role="status" aria-labelledby="opened-title" className="mb-5 rounded-xl border border-dw-line bg-dw-surface px-4 py-3">
         <h2 ref={title} id="opened-title" tabIndex={-1} className="font-medium [overflow-wrap:anywhere]">
           Back to {project.profile.name ?? "your untitled project"}.
         </h2>
@@ -33,7 +33,7 @@ export function OpenedNotice() {
   const kind = replaced === null ? "current" : fileStatus(replaced).kind;
   const unsaved = replaced !== null && kind !== "current" && !isEmptyProject(replaced.project);
   return (
-    <section role="status" aria-labelledby="opened-title" className="mb-5 border border-dw-ctl bg-dw-surface px-4 py-3">
+    <section role="status" aria-labelledby="opened-title" className="mb-5 rounded-xl border border-dw-line bg-dw-surface px-4 py-3">
       <h2 ref={title} id="opened-title" tabIndex={-1} className="font-medium [overflow-wrap:anywhere]">
         Opened {openNotice.fileName}.
       </h2>

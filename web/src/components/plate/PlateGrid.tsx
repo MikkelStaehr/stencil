@@ -206,10 +206,10 @@ export function PlateGrid<Id extends string>({ label, decision, options, chosenI
           type="button"
           onClick={choose}
           disabled={selected === null || selectedFailed}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-dw-accent px-4 font-semibold whitespace-nowrap text-dw-on-accent disabled:cursor-not-allowed disabled:bg-dw-ctl min-[761px]:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground disabled:cursor-not-allowed disabled:bg-dw-ctl min-[761px]:w-auto"
         >
           {selected ? `Choose ${selected.label}` : "Choose a variant"}
-          <kbd className="border-dw-on-accent bg-transparent text-dw-on-accent">Enter</kbd>
+          <kbd className="border-primary-foreground bg-transparent text-primary-foreground">Enter</kbd>
         </button>
       </div>
     </>
