@@ -7,6 +7,7 @@ import { formatRatio } from "@/domain/color/contrast";
 import { mdEscape } from "@/lib/md-escape";
 import { slug } from "@/lib/slug";
 import { roleCss } from "./css-vars";
+import { motionSection } from "./motion-md";
 import { shadcnCss, shadcnTable } from "./shadcn-map";
 import { buildTokens, requireResolved } from "./tokens-json";
 
@@ -122,9 +123,7 @@ export function designMd(p: ProjectFile): string {
     "",
     ...open("Max content width"),
     "",
-    "## Motion",
-    "",
-    OPEN,
+    ...motionSection(open),
     "",
     "## Iconography & imagery",
     "",

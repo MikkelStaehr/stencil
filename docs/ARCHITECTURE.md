@@ -45,6 +45,7 @@ web/
 │  ├─ domain/             pure TS, no React, no DOM
 │  │  ├─ color/           hex.ts · contrast.ts · pairs.ts · palette.ts   (palette/contrast module)
 │  │  ├─ tokens/          scales.ts · resolve.ts · plate-vars.ts
+│  │  ├─ motion.ts        motion tokens: durations, easings, the Apps ceiling (the same in light and dark)
 │  │  ├─ rules.ts         law + params → rendered rule; the rule count line
 │  │  ├─ decisions.ts     ordered decisions (each with its stop), STOPS for J/K/E, open decisions, export gate
 │  │  └─ parse-input.ts   defensive form input ("8px", "8,0", "0f766e")
@@ -62,6 +63,7 @@ web/
 │  │  ├─ shadcn-map.ts    role → shadcn table + CSS block. Optional layer, only when profile.componentLibrary = "shadcn"
 │  │  ├─ css-vars.ts      role-named CSS block + Tailwind v4 @theme (when componentLibrary = "none")
 │  │  ├─ design-md.ts     Part B markdown
+│  │  ├─ motion-md.ts     the Motion section of Part B and its CSS block (no "<": Mainframe rejects HTML)
 │  │  ├─ ux-rules-yaml.ts YAML via its own small emitter (closed shape, byte control)
 │  │  └─ index.ts         exportAll → DESIGN.md, tokens.json, ux-rules.yaml (the export step adds <slug>.dwproj.json from data/serialize)
 │  ├─ fonts/              loader.ts (FontFace as "dwv-<id>", cache, document.fonts.load) · use-font-pair.ts
@@ -110,6 +112,7 @@ These rules are enforced by `import/no-restricted-paths` zones and `import/no-cy
 | Role → shadcn variable, and the shadcn CSS block | `export/shadcn-map.ts` (one const table) | DESIGN.md table + CSS block, C4 |
 | Role-named CSS block (no shadcn) | `export/css-vars.ts` | DESIGN.md CSS block, C4 |
 | Law + params → rule text and check | `domain/rules.ts` | resolve (`resolved.rules`), principles step |
+| Motion tokens (durations, easings, the 300 ms Apps ceiling) | `domain/motion.ts` | `export/motion-md.ts` (DESIGN.md Motion section), `tests/unit/motion.test.ts` |
 | Open decisions, progress, export gate, the stop that reopens each | `domain/decisions.ts` | Rail, ExportStep, export/design-md, export/tokens-json |
 | Rule count line ("4 RULES · 3 MUST · 1 SHOULD") | `domain/rules.ts` | principles step, ExportStep |
 | File status (none, current, behind), Undo open | `data/project/store.ts` | ExportStep bar, OpenedNotice |

@@ -175,6 +175,61 @@
 
 ## Motion
 
+Motion shows a change: new content, a number that changes, a new status. It is never decoration alone. The tokens are the same in light and dark.
+
+| Token | Value | Use |
+|---|---|---|
+| `duration.fast` | 160ms | Hover, tooltips, press feedback |
+| `duration.base` | 220ms | Dropdowns, new rows, a number that changes |
+| `duration.slow` | 300ms | Modals and drawers; the ceiling for apps |
+| `duration.stagger` | 50ms | Delay between items in a list |
+| `duration.reveal` | 600ms | Section and hero reveals (websites only) |
+| `ease.out` | `cubic-bezier(0.23, 1, 0.32, 1)` | Entering and exiting (the default) |
+| `ease.in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | Moving on screen |
+| `ease.standard` | `ease` | Colour and hover |
+
+```css
+:root {
+  --duration-fast: 160ms; /* duration.fast */
+  --duration-base: 220ms; /* duration.base */
+  --duration-slow: 300ms; /* duration.slow */
+  --duration-stagger: 50ms; /* duration.stagger */
+  --duration-reveal: 600ms; /* duration.reveal, websites only */
+}
+@theme {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* ease.out */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* ease.in-out */
+  --ease-standard: ease; /* ease.standard */
+}
+```
+
+In Tailwind v4 the classes `ease-out`, `ease-in-out` and `ease-standard` use these curves; the first two replace Tailwind's defaults. Durations have no Tailwind namespace: write `duration-(--duration-fast)`.
+
+**Shelf.** The project's Mainframe channel decides it: Applications and Web applications use Apps; Website/Design uses Websites. The motion laws chosen for the project are in `ux-rules.yaml`.
+
+**Apps.** Small, functional motion only. Transitions last at most `duration.slow`. No WebGL or canvas backgrounds and no smooth scroll.
+
+**Websites.** Large visual sections, heroes, WebGL backgrounds and smooth scroll (Lenis) are allowed, each with a fallback: a still image where WebGL is missing, and native scrolling with still heroes under reduced motion.
+
+**Reduced motion.** Always respected. It means gentler, not none: keep short opacity and colour fades, drop movement.
+
+**Easing and properties.** Enter and exit with `ease.out`, never ease-in. Animate `transform` and `opacity` only, never `transition: all`. Anything opened by a keyboard shortcut appears at once, without animation.
+
+**Dependencies.** CSS first: transitions, `@starting-style` and the Web Animations API. A new animation dependency (GSAP, Motion, three.js) needs a one-line reason in the commit that adds it.
+
+**Patterns for apps.** CSS first and written for these tokens. The ideas come from React Bits; no code is copied.
+
+| Pattern | Use when | Not when | Tokens |
+|---|---|---|---|
+| Count-up number | A value changes while the user watches, such as a total after an edit | On every page load, or for values that update many times a minute | `duration.slow`, `ease.out`, tabular numerals |
+| List enter | A new row arrives (a new booking, a new message): it fades in and slides 8px | The list's first render, sorting or filtering | `duration.base`, `duration.stagger`, `ease.out` |
+| Working pulse | Something runs now (a sync, an upload, an agent at work): a ring pulses around its status | Finished or idle work: show a still status. Under reduced motion: a still dot | One cycle is 4 × `duration.slow`, `ease.in-out` |
+| Dock hover | A row of icon buttons on a pointer device: the hovered icon scales up to 1.15 | Touch screens, rows with text labels, primary navigation | `duration.fast`, `ease.out`, `@media (hover: hover) and (pointer: fine)` |
+| Grain | A flat surface needs texture: a still SVG noise overlay at 3–5% opacity | Anything animated, canvas, or behind body text where it lowers contrast | None: grain never moves |
+
+Sources: the easing curves, the 300ms ceiling and the reduced-motion rule come from Emil Kowalski's emilkowalski/skills (MIT). The pattern ideas come from React Bits (reactbits.dev, MIT + Commons Clause).
+
+**Signature motion**
 > **open: design-lead** – not decided in Stencil.
 
 ## Iconography & imagery

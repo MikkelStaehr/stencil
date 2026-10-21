@@ -245,6 +245,149 @@ export const LAWS: readonly LawEntry[] = [
     },
     "params": [],
     "source": "Kahneman, D., Fredrickson, B. L., Schreiber, C. A., Redelmeier, D. A. (1993)."
+  },
+  // Motion laws, approved by the user on 2026-10-21 (slice 4a). The apps-* laws belong to the Apps shelf
+  // (Applications, Web applications), website-* to the Websites shelf (Website/Design).
+  {
+    "id": "reduced-motion",
+    "name": "Reduced motion",
+    "summary": "Motion can make people dizzy or ill, and their reduced-motion setting asks for less of it.",
+    "when": "Any screen with motion.",
+    "rule": {
+      "key": "fades-only",
+      "template": "With reduced motion on, drop all movement and keep only short opacity and colour fades.",
+      "severity": "must",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "With reduced motion turned on in the OS, do the main screens change without any movement, apart from fades?"
+      }
+    },
+    "params": [],
+    "source": "W3C (2023). WCAG 2.2, Success Criterion 2.3.3 Animation from Interactions. Kowalski, E. (2026). emilkowalski/skills, review-animations (MIT)."
+  },
+  {
+    "id": "motion-purpose",
+    "name": "Purposeful motion",
+    "summary": "Motion helps when it shows what changed; as decoration it only slows people down.",
+    "when": "Any screen with motion.",
+    "rule": {
+      "key": "explains-change",
+      "template": "Animate only to show a change: new content, a number that changes or a new status.",
+      "severity": "must",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "On the main screens, does every animation follow a change in content, a number or a status?"
+      }
+    },
+    "params": [],
+    "source": "Kowalski, E. (2026). emilkowalski/skills, emil-design-eng and review-animations (MIT)."
+  },
+  {
+    "id": "motion-frequency",
+    "name": "Frequency of use",
+    "summary": "The more often people see an animation, the more it gets in their way.",
+    "when": "Menus, panels and actions opened from the keyboard.",
+    "rule": {
+      "key": "no-keyboard-motion",
+      "template": "Show and hide anything opened by a keyboard shortcut at once, without animation.",
+      "severity": "should",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "When a keyboard shortcut opens a menu or panel, does it appear at once, without animation?"
+      }
+    },
+    "params": [],
+    "source": "Kowalski, E. (2026). emilkowalski/skills, emil-design-eng (MIT)."
+  },
+  {
+    "id": "apps-native-scroll",
+    "name": "Apps: native scrolling",
+    "summary": "In an app, scrolling has to follow the hand exactly, and smooth-scroll libraries add lag.",
+    "when": "Applications and web applications (the Apps shelf).",
+    "rule": {
+      "key": "no-smooth-scroll",
+      "template": "Scroll natively: use {max} smooth-scroll libraries on any screen.",
+      "severity": "must",
+      "check": {
+        "kind": "max-count",
+        "selector": "html.lenis, html.has-scroll-smooth",
+        "viewports": [
+          390,
+          1280
+        ]
+      }
+    },
+    "params": [
+      {
+        "key": "max",
+        "label": "Smooth-scroll libraries per screen",
+        "unit": "count",
+        "integer": true,
+        "min": 0,
+        "max": 0,
+        "suggested": 0
+      }
+    ],
+    "source": "Stencil motion shelves (user, 2026-10-21). The selector finds Lenis and Locomotive Scroll."
+  },
+  {
+    "id": "apps-still-background",
+    "name": "Apps: still backgrounds",
+    "summary": "A moving background pulls the eye away from the work and costs battery.",
+    "when": "Applications and web applications (the Apps shelf).",
+    "rule": {
+      "key": "no-canvas-background",
+      "template": "Keep app backgrounds still, with no WebGL or canvas effect behind the content.",
+      "severity": "must",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "On every main screen, is the background still, with no animated canvas or WebGL effect behind the content?"
+      }
+    },
+    "params": [],
+    "source": "Stencil motion shelves (user, 2026-10-21)."
+  },
+  {
+    "id": "website-motion-fallback",
+    "name": "Websites: motion fallbacks",
+    "summary": "Big motion works only if the page still works without it.",
+    "when": "Websites (the Website/Design shelf) with animated heroes, WebGL or smooth scroll.",
+    "rule": {
+      "key": "still-fallback",
+      "template": "Give every animated hero and smooth scroll a fallback: a still image and native scrolling under reduced motion.",
+      "severity": "must",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "With reduced motion turned on, does the page scroll natively and show a still image in place of each animated hero?"
+      }
+    },
+    "params": [],
+    "source": "Stencil motion shelves (user, 2026-10-21). Lenis (lenis.dev, MIT)."
   }
 ];
 

@@ -51,20 +51,20 @@ const all = (params: (l: LawEntry) => Record<string, number>): Principle[] => LA
 const yamlRules = (p: ProjectFile) => (parseYaml(exportAll(p)["ux-rules.yaml"]) as { rules: { id: string; rule: string }[] }).rules;
 
 describe("criterion 1: each law's rule sentence equals the exported ux-rules.yaml and resolved.rules", () => {
-  test("the catalogue has exactly 9 laws", () => expect(LAWS.length).toBe(9));
+  test("the catalogue has exactly 15 laws (9 UX laws, 6 motion laws)", () => expect(LAWS.length).toBe(15));
 
   for (const [name, params] of [
     ["suggested", suggested],
     ["edited", edited],
   ] as const) {
-    test(`all 9 laws with ${name} params: renderRule == resolved.rules == ux-rules.yaml, in catalogue order`, () => {
+    test(`all 15 laws with ${name} params: renderRule == resolved.rules == ux-rules.yaml, in catalogue order`, () => {
       const store = createProjectStore(new MemoryStorage());
       store.open(harbourText);
       store.setPrinciples(all(params));
       const p = store.getState().project;
       const fromYaml = yamlRules(p);
-      expect(fromYaml).toHaveLength(9);
-      expect(p.resolved?.rules).toHaveLength(9);
+      expect(fromYaml).toHaveLength(LAWS.length);
+      expect(p.resolved?.rules).toHaveLength(LAWS.length);
       LAWS.forEach((law, i) => {
         const r = renderRule(law, params(law));
         expect(p.resolved!.rules[i].id).toBe(r.id);
@@ -125,12 +125,14 @@ describe("criterion 2: param parsing", () => {
     expect(parseParamInput(raw, param(lawId))).toEqual({ ok: true, value });
   });
 
-  test("0 is rejected for every param of every law (no law has min <= 0)", () => {
-    const params = LAWS.flatMap((l) => l.params);
+  test("0 is rejected for every param with min > 0, and only apps-native-scroll.max allows 0", () => {
+    const params = LAWS.flatMap((l) => l.params.map((p) => ({ law: l.id, p })));
     expect(params.length).toBeGreaterThan(0);
-    for (const p of params) {
-      expect(p.min).toBeGreaterThan(0);
-      for (const zero of ["0", "0,0", "0.0", "-0"]) expect(parseParamInput(zero, p).ok).toBe(false);
+    // max-count's "none allowed" (CONTRACTS §3): the one param where 0 is a real value, not a missing one.
+    expect(params.filter(({ p }) => p.min <= 0).map(({ law, p }) => `${law}.${p.key}`)).toEqual(["apps-native-scroll.max"]);
+    for (const { p } of params) {
+      for (const zero of ["0", "0,0", "0.0"]) expect(parseParamInput(zero, p)).toEqual(p.min <= 0 ? { ok: true, value: 0 } : expect.objectContaining({ ok: false }));
+      if (p.min > 0) expect(parseParamInput("-0", p).ok).toBe(false);
     }
   });
 

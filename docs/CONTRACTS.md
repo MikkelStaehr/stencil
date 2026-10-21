@@ -249,7 +249,7 @@ The exported file is meant to be merged into the target repo's DESIGN.md. It use
 | Colour | 11-role table (hex), contrast table (§4.3), then one CSS block: the shadcn table + shadcn CSS block (§4.2) when `profile.componentLibrary` is `"shadcn"`, otherwise the role-named CSS block (§4.2a). The line "Dark theme: not defined in v0.1." | Accent usage |
 | Shape & depth | Radius (`0px` written as such) | Borders vs. shadows, elevation levels |
 | Space & density | Spacing base + scale, density | Max content width |
-| Motion | – | whole section |
+| Motion | Motion tokens and their CSS block (§4.4), the two shelves, reduced motion, easing, dependencies, app patterns | Signature motion |
 | Iconography & imagery | – | whole section |
 | Project rules | – | whole section |
 
@@ -316,6 +316,13 @@ This is one fenced `css` block. Its text equals `roleCss(tokensJson)` from `expo
   - `border / bg` ≥ 3, `border / surface` ≥ 3, `focus / bg` ≥ 3
 - **Ratio:** WCAG 2.x relative luminance, with the sRGB linearisation threshold **0.04045**. PASS is decided on the unrounded value. The displayed ratio is **floored** to 2 decimals, so a value can never be rounded up into a pass: 4.478 shows as 4.47.
 - **Row format:** `| <fg> / <bg> | <ratio> : 1 | ≥ <min> | PASS |`, e.g. `| text-muted / bg | 4.72 : 1 | ≥ 4.5 | PASS |`. FAIL rows can't occur in an export, because the export gate blocks on any failing pair.
+
+### 4.4 Motion (slice 4a)
+
+- **Tokens** are owned by `domain/motion.ts` and are the same for every project, in light and dark: `duration.fast` 160ms, `.base` 220ms, `.slow` 300ms (the Apps ceiling), `.stagger` 50ms, `.reveal` 600ms (Websites only); `ease.out`, `ease.in-out`, `ease.standard`.
+- They are exported **in DESIGN.md only**: a table plus one fenced `css` block equal to `motionCss()` from `export/motion-md.ts` (`:root` durations, `@theme` easings). This block comes after the colour block, so C3 and C4 still read the first `css` block. tokens.json gets them in v2 (planned with the Stencil name bump).
+- The section text is fixed and contains no `<`, because Mainframe rejects anything that looks like HTML.
+- **Shelves** follow the project's Mainframe channel. The motion laws (`reduced-motion`, `motion-purpose`, `motion-frequency`, `apps-native-scroll`, `apps-still-background`, `website-motion-fallback`) use existing check kinds, so ux-rules.yaml stays v1. `apps-native-scroll` is a `max-count` with `max` 0, the one law param where 0 is valid.
 
 ---
 

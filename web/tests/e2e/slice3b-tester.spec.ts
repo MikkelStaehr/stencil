@@ -26,9 +26,10 @@ const savedText = (page: Page): Promise<string> => page.evaluate((key) => JSON.p
 const saved = async (page: Page): Promise<ProjectFile> => JSON.parse(await savedText(page));
 const law = (page: Page, id: string) => page.locator(`li[data-law="${id}"]`);
 const box = (page: Page, id: string) => page.locator(`#law-${id}`);
-const LAW_IDS = ["fitts", "hick", "wcag-contrast", "wcag-focus-visible", "response-limits", "recognition-recall", "proximity", "error-recovery", "peak-end"];
+const LAW_IDS = ["fitts", "hick", "wcag-contrast", "wcag-focus-visible", "response-limits", "recognition-recall", "proximity", "error-recovery", "peak-end",
+  "reduced-motion", "motion-purpose", "motion-frequency", "apps-native-scroll", "apps-still-background", "website-motion-fallback"];
 
-test("all 9 ticked laws, with edited params, show the exact rule lines of exportAll's ux-rules.yaml", async ({ page }) => {
+test("all 15 ticked laws, with edited params, show the exact rule lines of exportAll's ux-rules.yaml", async ({ page }) => {
   await seed(page);
   await page.goto("/?step=principles");
   for (const id of LAW_IDS) await box(page, id).check();
@@ -42,7 +43,7 @@ test("all 9 ticked laws, with edited params, show the exact rule lines of export
   const file = await saved(page);
   expect(file.principles?.map((p) => p.lawId)).toEqual(LAW_IDS);
   const yamlRules = (parseYaml(exportAll(file)["ux-rules.yaml"]) as { rules: { id: string; rule: string }[] }).rules;
-  expect(yamlRules).toHaveLength(9);
+  expect(yamlRules).toHaveLength(LAW_IDS.length);
   for (const [i, id] of LAW_IDS.entries()) {
     const sentence = law(page, id).locator("[data-rule-id]");
     await expect(sentence).toHaveAttribute("data-rule-id", yamlRules[i].id);
@@ -148,7 +149,7 @@ test("legend says Enter: Continue; keyboard focus is visible and never under the
   }
   // ArrowDown on the last law does not wrap.
   await page.keyboard.press("ArrowDown");
-  await expect(box(page, "peak-end")).toBeFocused();
+  await expect(box(page, LAW_IDS[LAW_IDS.length - 1])).toBeFocused();
 });
 
 test("do/don't plates are inert images: not focusable, no click effect, nothing in tab order", async ({ page }) => {
