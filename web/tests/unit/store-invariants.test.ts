@@ -94,7 +94,7 @@ test("after every action in 300 seeded random sequences, the autosave is valid a
       check(store, trail, before);
     }
   }
-});
+}, 30_000); // 300 sequences take about 3–4 s alone; the default 5 s timed out when every test file ran in parallel (slice 4b).
 
 test("reviewer case: a visual change while the name is open is not undone when the name returns", () => {
   const store = createProjectStore(null);

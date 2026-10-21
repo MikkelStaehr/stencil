@@ -8,8 +8,8 @@ import { normalizeHex } from "@/domain/color/hex";
 // owner of the WCAG formula. Ratios are never typed here: change a token and this test recomputes it.
 const css = readFileSync(join(__dirname, "..", "..", "src", "app", "globals.css"), "utf8");
 
-function block(selector: string): Record<string, string> {
-  const start = css.indexOf(selector);
+function block(selector: RegExp): Record<string, string> {
+  const start = css.search(selector);
   expect(start, `${selector} block in globals.css`).toBeGreaterThanOrEqual(0);
   const body = css.slice(css.indexOf("{", start) + 1, css.indexOf("}", start));
   const tokens: Record<string, string> = {};
@@ -21,7 +21,8 @@ function block(selector: string): Record<string, string> {
   return tokens;
 }
 
-const THEMES = { dark: block(':root,\n[data-theme="dark"] {'), light: block('[data-theme="light"] {') };
+// \s* so a CRLF checkout finds the same blocks.
+const THEMES = { dark: block(/:root,\s*\[data-theme="dark"\]\s*\{/), light: block(/\[data-theme="light"\]\s*\{/) };
 const BACKGROUNDS = ["dw-rail", "dw-bg", "dw-aside", "dw-surface", "dw-hover", "dw-selected"];
 
 /** [foreground, backgrounds, minimum ratio]. Text 4.5, non-text (control borders, focus, chip, crop marks) 3. */

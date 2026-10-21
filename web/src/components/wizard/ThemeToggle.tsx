@@ -37,7 +37,8 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
             aria-pressed={pressed}
             aria-label={compact ? `${o.label} theme` : undefined}
             onClick={() => setTheme(o.theme)}
-            className={`inline-flex items-center justify-center gap-2 rounded-md text-small transition-colors duration-(--duration-fast) ease-standard ${
+            // The pressed outline is a utility, so focus needs its own utilities to stay visible on top of it.
+            className={`inline-flex items-center justify-center gap-2 rounded-md text-small transition-colors duration-(--duration-fast) ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus ${
               compact ? "size-11" : "min-h-11 flex-1"
             } ${pressed ? "bg-dw-selected font-medium text-dw-text outline outline-1 -outline-offset-1 outline-dw-ctl" : "text-dw-text-muted hover:bg-dw-hover"}`}
           >

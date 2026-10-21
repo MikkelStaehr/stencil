@@ -40,6 +40,16 @@ test("the exported Motion section carries motionCss() exactly and a table row pe
   expect(section.split("\n").filter((l) => l.startsWith("> **open: design-lead**"))).toHaveLength(1);
 });
 
+test("the chrome's motion tokens in globals.css equal domain/motion.ts (slice 4b)", () => {
+  const css = readFileSync(join(__dirname, "..", "..", "src", "app", "globals.css"), "utf8");
+  const used = [...css.matchAll(/--(duration|ease)-([a-z-]+):\s*([^;]+);/g)];
+  expect(used.length).toBeGreaterThan(0);
+  for (const [, kind, key, value] of used) {
+    if (kind === "duration") expect(`${MOTION_DURATIONS.find((d) => d.key === key)?.ms}ms`, `--duration-${key}`).toBe(value.trim());
+    else expect(MOTION_EASINGS.find((e) => e.key === key)?.css, `--ease-${key}`).toBe(value.trim());
+  }
+});
+
 test("the Motion section holds nothing Mainframe reads as HTML (app/web/src/lib/design/export.ts designProblem)", () => {
   expect(/(^|[^\\])(\\\\)*<[A-Za-z/!?]/m.test(section)).toBe(false);
 });
