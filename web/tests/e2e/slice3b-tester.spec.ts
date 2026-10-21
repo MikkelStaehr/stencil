@@ -27,9 +27,9 @@ const saved = async (page: Page): Promise<ProjectFile> => JSON.parse(await saved
 const law = (page: Page, id: string) => page.locator(`li[data-law="${id}"]`);
 const box = (page: Page, id: string) => page.locator(`#law-${id}`);
 const LAW_IDS = ["fitts", "hick", "wcag-contrast", "wcag-focus-visible", "response-limits", "recognition-recall", "proximity", "error-recovery", "peak-end",
-  "reduced-motion", "motion-purpose", "motion-frequency", "apps-native-scroll", "apps-still-background", "website-motion-fallback"];
+  "reduced-motion", "motion-purpose", "motion-frequency", "apps-native-scroll", "apps-still-background", "website-motion-fallback", "website-still-hero"];
 
-test("all 15 ticked laws, with edited params, show the exact rule lines of exportAll's ux-rules.yaml", async ({ page }) => {
+test("all 16 ticked laws, with edited params, show the exact rule lines of exportAll's ux-rules.yaml", async ({ page }) => {
   await seed(page);
   await page.goto("/?step=principles");
   for (const id of LAW_IDS) await box(page, id).check();

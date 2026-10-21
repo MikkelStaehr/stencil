@@ -55,6 +55,7 @@ not disturb a dev server on port 3000.
 
 ## Rules
 - UI placed by a data value (markers, flags, chart labels): shoot it at three positions (left, middle, right) via a fixture. One position proves nothing about the other two.
+- New content shown in an existing step or screen (new catalogue entries, new rows, a new section): take one 1280 px shot of it, even when e2e is green. e2e checks sizes and overflow, not empty space. (Retro slice 4a: the motion laws left an empty 312 px column that only the reviewer found.)
 - Port 3110 only. The script refuses to start if the port is taken (never stop another project's server; ask) and always stops its own server.
 - Full-page shots use `captureBeyondViewport` with a clip. Never resize the viewport before capture; headless Edge then returns tiled images.
 - The app reads no environment variables; there is no `.env.local` to protect.

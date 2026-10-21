@@ -322,7 +322,7 @@ This is one fenced `css` block. Its text equals `roleCss(tokensJson)` from `expo
 - **Tokens** are owned by `domain/motion.ts` and are the same for every project, in light and dark: `duration.fast` 160ms, `.base` 220ms, `.slow` 300ms (the Apps ceiling), `.stagger` 50ms, `.reveal` 600ms (Websites only); `ease.out`, `ease.in-out`, `ease.standard`.
 - They are exported **in DESIGN.md only**: a table plus one fenced `css` block equal to `motionCss()` from `export/motion-md.ts` (`:root` durations, `@theme` easings). This block comes after the colour block, so C3 and C4 still read the first `css` block. tokens.json gets them in v2 (planned with the Stencil name bump).
 - The section text is fixed and contains no `<`, because Mainframe rejects anything that looks like HTML.
-- **Shelves** follow the project's Mainframe channel. The motion laws (`reduced-motion`, `motion-purpose`, `motion-frequency`, `apps-native-scroll`, `apps-still-background`, `website-motion-fallback`) use existing check kinds, so ux-rules.yaml stays v1. `apps-native-scroll` is a `max-count` with `max` 0, the one law param where 0 is valid.
+- **Shelves** follow the project's Mainframe channel. The motion laws (`reduced-motion`, `motion-purpose`, `motion-frequency`, `apps-native-scroll`, `apps-still-background`, `website-motion-fallback`, `website-still-hero`) use existing check kinds, so ux-rules.yaml stays v1. `apps-native-scroll` is a `max-count` with `max` 0, the one law param where 0 is valid.
 
 ---
 

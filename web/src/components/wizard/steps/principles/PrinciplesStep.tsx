@@ -363,7 +363,9 @@ function LawCard(props: {
   return (
     <li
       data-law={law.id}
-      className={`grid grid-cols-1 border border-dw-line bg-dw-surface p-4 @min-[640px]:grid-cols-[minmax(0,1fr)_312px] @min-[640px]:gap-5 ${
+      className={`grid grid-cols-1 border border-dw-line bg-dw-surface p-4 ${
+        demos ? "@min-[640px]:grid-cols-[minmax(0,1fr)_312px] @min-[640px]:gap-5" : ""
+      } ${
         selected ? "shadow-[inset_3px_0_0_var(--dw-accent)]" : ""
       }`}
     >

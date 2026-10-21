@@ -2,3 +2,5 @@
 web/fixtures/** text eol=lf
 web/tests/contract/golden/** text eol=lf
 web/tests/fixtures/** text eol=lf
+# Shell scripts run on macOS/Linux: LF even after a Windows checkout with core.autocrlf.
+*.sh text eol=lf

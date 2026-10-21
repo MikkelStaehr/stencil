@@ -22,7 +22,7 @@ export function parseNumberInput(raw: string, opts: { min: number; max: number; 
   const value = Number(m[1].replace(",", "."));
   if (opts.integer && !Number.isInteger(value)) return { ok: false, message: `Enter a whole number from ${range}.` };
   if (value < opts.min || value > opts.max) return { ok: false, message: `Enter a number from ${range}. You entered ${m[1]}.` };
-  return { ok: true, value };
+  return { ok: true, value: value + 0 }; // + 0 turns "-0" into 0
 }
 
 /** A law param as typed: "44", "44px", "4,5", "4.5:1", "400 ms". Messages give the range in the param's own units. */
@@ -36,5 +36,5 @@ export function parseParamInput(raw: string, param: LawParam): InputResult<numbe
   const value = Number(m[1].replace(",", "."));
   if (param.integer && !Number.isInteger(value)) return { ok: false, message: `Enter a whole number ${range}.` };
   if (value < param.min || value > param.max) return { ok: false, message: `Enter ${kind} ${range}. You entered ${formatParam(value, param.unit)}.` };
-  return { ok: true, value };
+  return { ok: true, value: value + 0 }; // + 0 turns "-0" into 0
 }

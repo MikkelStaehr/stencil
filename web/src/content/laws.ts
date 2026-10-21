@@ -368,13 +368,14 @@ export const LAWS: readonly LawEntry[] = [
     "source": "Stencil motion shelves (user, 2026-10-21)."
   },
   {
+    // Split in two (user, 2026-10-21) so each manual question asks one thing (CONTRACTS §3). The id stays.
     "id": "website-motion-fallback",
-    "name": "Websites: motion fallbacks",
-    "summary": "Big motion works only if the page still works without it.",
-    "when": "Websites (the Website/Design shelf) with animated heroes, WebGL or smooth scroll.",
+    "name": "Websites: smooth-scroll fallback",
+    "summary": "Smooth scroll works only if the page still scrolls normally without it.",
+    "when": "Websites (the Website/Design shelf) with smooth scroll.",
     "rule": {
-      "key": "still-fallback",
-      "template": "Give every animated hero and smooth scroll a fallback: a still image and native scrolling under reduced motion.",
+      "key": "native-scroll",
+      "template": "Turn smooth scroll off under reduced motion, so the page scrolls natively.",
       "severity": "must",
       "check": {
         "kind": "manual",
@@ -383,11 +384,33 @@ export const LAWS: readonly LawEntry[] = [
           390,
           1280
         ],
-        "question": "With reduced motion turned on, does the page scroll natively and show a still image in place of each animated hero?"
+        "question": "With reduced motion turned on in the OS, does the page scroll natively, without a smooth-scroll effect?"
       }
     },
     "params": [],
     "source": "Stencil motion shelves (user, 2026-10-21). Lenis (lenis.dev, MIT)."
+  },
+  {
+    "id": "website-still-hero",
+    "name": "Websites: still hero fallback",
+    "summary": "A big animated hero works only if the page still works without the motion.",
+    "when": "Websites (the Website/Design shelf) with an animated or WebGL hero.",
+    "rule": {
+      "key": "still-image",
+      "template": "Under reduced motion, show a still image in place of every animated hero.",
+      "severity": "must",
+      "check": {
+        "kind": "manual",
+        "selector": null,
+        "viewports": [
+          390,
+          1280
+        ],
+        "question": "With reduced motion turned on in the OS, does each animated hero show as a still image?"
+      }
+    },
+    "params": [],
+    "source": "Stencil motion shelves (user, 2026-10-21)."
   }
 ];
 

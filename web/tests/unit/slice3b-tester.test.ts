@@ -45,19 +45,19 @@ const harbour = (): ProjectFile => {
   return r.project;
 };
 const suggested = (law: LawEntry) => Object.fromEntries(law.params.map((p) => [p.key, p.suggested]));
-/** A non-suggested in-range value per param: the max, which is never the suggested value in the catalogue. */
+/** An in-range value per param: the max, or the min where the max is the suggested value. apps-native-scroll.max (0–0) has no other value. */
 const edited = (law: LawEntry) => Object.fromEntries(law.params.map((p) => [p.key, p.max === p.suggested ? p.min : p.max]));
 const all = (params: (l: LawEntry) => Record<string, number>): Principle[] => LAWS.map((l) => ({ lawId: l.id, params: params(l) }));
 const yamlRules = (p: ProjectFile) => (parseYaml(exportAll(p)["ux-rules.yaml"]) as { rules: { id: string; rule: string }[] }).rules;
 
 describe("criterion 1: each law's rule sentence equals the exported ux-rules.yaml and resolved.rules", () => {
-  test("the catalogue has exactly 15 laws (9 UX laws, 6 motion laws)", () => expect(LAWS.length).toBe(15));
+  test("the catalogue has exactly 16 laws (9 UX laws, 7 motion laws)", () => expect(LAWS.length).toBe(16));
 
   for (const [name, params] of [
     ["suggested", suggested],
     ["edited", edited],
   ] as const) {
-    test(`all 15 laws with ${name} params: renderRule == resolved.rules == ux-rules.yaml, in catalogue order`, () => {
+    test(`all 16 laws with ${name} params: renderRule == resolved.rules == ux-rules.yaml, in catalogue order`, () => {
       const store = createProjectStore(new MemoryStorage());
       store.open(harbourText);
       store.setPrinciples(all(params));
@@ -131,8 +131,9 @@ describe("criterion 2: param parsing", () => {
     // max-count's "none allowed" (CONTRACTS §3): the one param where 0 is a real value, not a missing one.
     expect(params.filter(({ p }) => p.min <= 0).map(({ law, p }) => `${law}.${p.key}`)).toEqual(["apps-native-scroll.max"]);
     for (const { p } of params) {
+      for (const zero of ["0", "0,0", "0.0", "-0"]) expect(Object.is((parseParamInput(zero, p) as { value?: number }).value, -0)).toBe(false);
       for (const zero of ["0", "0,0", "0.0"]) expect(parseParamInput(zero, p)).toEqual(p.min <= 0 ? { ok: true, value: 0 } : expect.objectContaining({ ok: false }));
-      if (p.min > 0) expect(parseParamInput("-0", p).ok).toBe(false);
+      expect(parseParamInput("-0", p)).toEqual(p.min <= 0 ? { ok: true, value: 0 } : expect.objectContaining({ ok: false }));
     }
   });
 
