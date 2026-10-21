@@ -5,11 +5,12 @@ description: Run the Next.js app in web/ on port 3110 (dev mode) and take exact-
 
 # run-web
 
-> **Template from the team repo (`waan/teams`)** (originally built in Famprove), adapted for Design Wizard:
+> **Template from the team repo (`waan/teams`)** (originally built in Famprove), adapted for Stencil:
 > port 3110, dev mode only (the app is a static export, so `next start` cannot serve it) and no `DEV_TODAY`
-> (the app has no date override). Keep these when merging team updates; keep the "Read the PNG" rule.
+> (the app has no date override), in both `serve.ps1` and `serve.sh`. Keep these when merging team updates;
+> keep the "Read the PNG" rule. Last merged from the team repo on 2026-10-21 (slice 4a).
 
-Start the web app on **port 3110** (design-wizard's agent port, CLAUDE.md; 3000 is the user's and other
+Start the web app on **port 3110** (Stencil's agent port, CLAUDE.md; 3000 is the user's and other
 projects' agents have their own ports: never touch or stop those), run a command against it, and always
 stop it again. Screenshots come from Edge through the DevTools protocol, in real time and at an exact
 viewport width.
@@ -34,6 +35,13 @@ to the session scratchpad or `%TEMP%`, never into the repo.
 .claude/skills/run-web/serve.ps1 -Cmd "node .claude/skills/run-web/shoot.mjs --out $env:TEMP\h-1280.png --width 1280 --path '/?fixture=harbour'; node .claude/skills/run-web/shoot.mjs --out $env:TEMP\h-390.png --path '/?fixture=harbour&step=export'"
 ```
 
+**macOS / Linux:** the same from bash with `serve.sh`; the command comes after `--`.
+
+```bash
+.claude/skills/run-web/serve.sh -- "node .claude/skills/run-web/shoot.mjs --out $TMPDIR/shell-390.png"
+.claude/skills/run-web/serve.sh -- "node .claude/skills/run-web/shoot.mjs --out $TMPDIR/h-1280.png --width 1280 --path '/?fixture=harbour'"
+```
+
 `shoot.mjs` options: `--out <png>` (required) · `--path /?fixture=harbour` (default `/`) ·
 `--width 390` · `--open` (open every `<details>`) · `--dark` · `--reduce-motion` (emulates
 `prefers-reduced-motion: reduce`) · `--zoom200` (root font 200 %) ·
@@ -50,4 +58,5 @@ not disturb a dev server on port 3000.
 - Port 3110 only. The script refuses to start if the port is taken (never stop another project's server; ask) and always stops its own server.
 - Full-page shots use `captureBeyondViewport` with a clip. Never resize the viewport before capture; headless Edge then returns tiled images.
 - The app reads no environment variables; there is no `.env.local` to protect.
-- Edge lives at the default Windows path; set `EDGE_PATH` if not.
+- Windows: Edge at its default path. macOS/Linux: the first of Edge, Chrome or Chromium found in the usual places. Set `EDGE_PATH` to use another. With no browser, `shoot.mjs` says so and exits 1.
+- The colour scheme is always set (light unless `--dark`), so a shot never follows the OS's dark mode by accident.

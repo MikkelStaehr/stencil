@@ -3,7 +3,7 @@
 //   [--open] [--dark] [--reduce-motion] [--zoom200] [--base http://localhost:<agent port>]
 // Prints one JSON line; exits 1 on horizontal overflow, console errors or a page that never got ready.
 import { spawn } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
@@ -25,7 +25,18 @@ if (!opt.out) {
   process.exit(2);
 }
 const width = Number(opt.width);
-const edgePath = process.env.EDGE_PATH ?? "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+// Windows: Edge at its default path. macOS/Linux: the first of Edge, Chrome or Chromium that exists.
+const BROWSERS = {
+  win32: ["C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"],
+  darwin: [
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+  ],
+  linux: ["/usr/bin/microsoft-edge", "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser", "/snap/bin/chromium"],
+};
+const candidates = BROWSERS[process.platform] ?? BROWSERS.linux;
+const edgePath = process.env.EDGE_PATH ?? candidates.find((p) => existsSync(p)) ?? candidates[0];
 const profile = mkdtempSync(join(tmpdir(), "run-web-"));
 const port = 9800 + Math.floor(Math.random() * 100);
 const edge = spawn(
@@ -33,6 +44,12 @@ const edge = spawn(
   ["--headless=new", "--disable-gpu", "--hide-scrollbars", `--user-data-dir=${profile}`, `--remote-debugging-port=${port}`, "about:blank"],
   { stdio: "ignore" },
 );
+// A missing browser is a clear message and exit 1, not an unhandled spawn error.
+edge.on("error", () => {
+  console.error(`no browser at ${edgePath}; install Edge or Chrome, or set EDGE_PATH`);
+  rmSync(profile, { recursive: true, force: true });
+  process.exit(1);
+});
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let exitCode = 0;
 
@@ -77,11 +94,12 @@ try {
   const metrics = (height) =>
     send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false }); // mobile emulation repeats the first screen in beyond-viewport captures
   await metrics(844);
+  // The scheme is always set: without it headless Chrome follows the OS, so a "light" shot on a dark-mode OS comes out dark.
   const media = [
-    ...(opt.dark ? [{ name: "prefers-color-scheme", value: "dark" }] : []),
+    { name: "prefers-color-scheme", value: opt.dark ? "dark" : "light" },
     ...(opt["reduce-motion"] ? [{ name: "prefers-reduced-motion", value: "reduce" }] : []),
   ];
-  if (media.length > 0) await send("Emulation.setEmulatedMedia", { features: media });
+  await send("Emulation.setEmulatedMedia", { features: media });
   await send("Page.navigate", { url: new URL(opt.path, opt.base).href });
 
   // Real time, no --virtual-time-budget: React hydrates on an animation frame virtual time never fires.
