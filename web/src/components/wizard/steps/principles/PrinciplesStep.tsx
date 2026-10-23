@@ -4,7 +4,7 @@ import type { LawEntry, LawParam } from "@/contracts/content";
 import type { Principle, ProjectFile, Visual } from "@/contracts/project";
 import { LAWS } from "@/content/laws";
 import { projectStore, useProject } from "@/data/project/store";
-import { lastDecidedStopBefore, nextStop, type StopId } from "@/domain/decisions";
+import { nextStop, type StopId } from "@/domain/decisions";
 import { parseParamInput } from "@/domain/parse-input";
 import { countLine, formatParam, renderRule, ruleParts } from "@/domain/rules";
 import { PREVIEW_NEUTRALS, resolveForPlate } from "@/domain/tokens/resolve";
@@ -251,12 +251,12 @@ export function PrinciplesStep({ project, onMove }: { project: ProjectFile; onMo
       <button
         type="button"
         onClick={() => {
-          const to = lastDecidedStopBefore(project, "principles");
-          if (to) onMove(to);
+          // The profile lab's last stop. Not E: since 5b, Laws follow the visual labs, so E goes to Density.
+          onMove("profile.library");
         }}
         className="mt-5 inline-flex min-h-11 items-center gap-2 text-small text-dw-text underline underline-offset-4"
       >
-        Reopen the profile <kbd>E</kbd>
+        Reopen the profile
       </button>
 
       <div

@@ -47,7 +47,7 @@ web/
 │  │  ├─ tokens/          scales.ts · resolve.ts · plate-vars.ts
 │  │  ├─ motion.ts        motion tokens: durations, easings, the Apps ceiling (the same in light and dark)
 │  │  ├─ rules.ts         law + params → rendered rule; the rule count line
-│  │  ├─ decisions.ts     ordered decisions (each with its stop), STOPS for J/K/E, open decisions, export gate
+│  │  ├─ decisions.ts     LABS and the path (12 STOPS, each with its lab) for J/K/E, ?step=/?lab= links, decisions with their stops, open decisions, export gate
 │  │  └─ parse-input.ts   defensive form input ("8px", "8,0", "0f766e")
 │  ├─ data/project/       THE data layer: every project-file read, write and parse goes through here
 │  │  ├─ parse.ts         text → ProjectFile, or every error
@@ -72,7 +72,7 @@ web/
 │     ├─ ui/              shadcn primitives, chrome theme only
 │     ├─ wizard/          WizardShell · Rail · ThemeToggle (Dark / Light, slice 4b) · ShortcutLegend · use-shortcuts · ContrastTable · LivePreview · preview-candidate ·
 │     │                   SnapshotNotice · OpenedNotice · OpenProjectButton · SubDecisionList · ArrowText · classes (shared button classes)
-│     │  └─ steps/        profile · principles · visual/{font-pair,spacing,radius,palette,density} · preview · export/ExportStep
+│     │  └─ steps/        the views each stop shows: profile · visual/{palette (BrandStop + palette), font-pair, spacing, radius, density} · principles · preview · export/ExportStep. The shell (WizardShell, Rail) is the lab pattern of design/labs/
 │     ├─ plate/           Plate (crop marks, brackets, fixed size, loading/failed) · PlateGrid (radiogroup, 1/2/3) · demo-vars (DiffPins is planned for v0.2. Samples already carry data-v-part.)
 │     └─ samples/         SampleCard · SampleScreen · samples.module.css. These read only --v-*.
 └─ tests/
@@ -113,7 +113,7 @@ These rules are enforced by `import/no-restricted-paths` zones and `import/no-cy
 | Role-named CSS block (no shadcn) | `export/css-vars.ts` | DESIGN.md CSS block, C4 |
 | Law + params → rule text and check | `domain/rules.ts` | resolve (`resolved.rules`), principles step |
 | Motion tokens (durations, easings, the 300 ms Apps ceiling) | `domain/motion.ts` | `export/motion-md.ts` (DESIGN.md Motion section), `tests/unit/motion.test.ts` |
-| Open decisions, progress, export gate, the stop that reopens each | `domain/decisions.ts` | Rail, ExportStep, export/design-md, export/tokens-json |
+| Labs and the path (stop order, lab of a stop, "stop n of 12", next/previous, ?step=/?lab= links), open decisions, progress, export gate, the stop that reopens each | `domain/decisions.ts` | WizardShell, Rail, every view (moving on is `nextStop`), ExportStep, export/design-md, export/tokens-json |
 | Rule count line ("4 RULES · 3 MUST · 1 SHOULD") | `domain/rules.ts` | principles step, ExportStep |
 | File status (none, current, behind), Undo open | `data/project/store.ts` | ExportStep bar, OpenedNotice |
 | Is the project untouched | `data/project/empty.ts` | OpenedNotice (replaced-work warning) |
@@ -156,7 +156,7 @@ Tests call these owners. The only independent re-implementation is a set of hand
 | `pnpm golden` | Regenerates the golden files; the diff is reviewed in the commit |
 | `pnpm serve` | The user's daily instance: `next build` into `out-daily/` (next.config.ts switches distDir when `npm_lifecycle_event` is `serve`), then `serve-out.mjs --dir out-daily --port 3210 --host 127.0.0.1`. Agent builds write `out/` only. Agents don't run it. |
 
-**run-web: dev mode only.** `serve.ps1 -Mode prod` calls `next start`, which does not serve `output: 'export'`. Screenshot a state with `--path "/?fixture=harbour&step=visual.palette"`. Slice 1 also removes `DEV_TODAY` and the stale Supabase line from `SKILL.md`. Next ≥ 16 keeps dev output in `.next/dev`, so `pnpm build` does not clobber the user's dev server; verify this in slice 1, step 1.
+**run-web: dev mode only.** `serve.ps1 -Mode prod` calls `next start`, which does not serve `output: 'export'`. Screenshot a state with `--path "/?fixture=harbour&step=visual.palette"` (a stop) or `&lab=color` (a lab's first open stop). Slice 1 also removes `DEV_TODAY` and the stale Supabase line from `SKILL.md`. Next ≥ 16 keeps dev output in `.next/dev`, so `pnpm build` does not clobber the user's dev server; verify this in slice 1, step 1.
 
 **Env vars and scheduled jobs: none.** The app reads no environment variable and has no workflow, so there is no `check-config`. `.env.example` says "no variables". If hosting is added later, `check-config` arrives with the first workflow.
 

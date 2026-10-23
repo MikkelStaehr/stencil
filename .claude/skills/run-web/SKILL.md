@@ -31,7 +31,8 @@ to the session scratchpad or `%TEMP%`, never into the repo.
 .claude/skills/run-web/serve.ps1 -Cmd "node .claude/skills/run-web/shoot.mjs --out $env:TEMP\shell-390.png"
 
 # Several shots against one server; ?fixture= picks a dev state (empty, harbour, stale, invalid-many,
-# zero-laws, behind, edge-name, snapshot-differs) and &step= a stop
+# zero-laws, behind, edge-name, snapshot-differs), &step= a stop (e.g. visual.brandHex), &lab= a lab's first open stop
+# (profile, color, type, space, laws, preview, export) and &theme=light the light theme for that load
 .claude/skills/run-web/serve.ps1 -Cmd "node .claude/skills/run-web/shoot.mjs --out $env:TEMP\h-1280.png --width 1280 --path '/?fixture=harbour'; node .claude/skills/run-web/shoot.mjs --out $env:TEMP\h-390.png --path '/?fixture=harbour&step=export'"
 ```
 

@@ -52,8 +52,8 @@ test("new project: decisions stay null until committed; componentLibrary starts 
   await expect(group.getByRole("radio")).toHaveCount(2);
   await expect(group.getByRole("radio", { name: /^Option 1, shadcn/ })).toHaveAttribute("aria-checked", "true");
   await expect(group.locator("section").first().getByText("Chosen", { exact: true })).toBeVisible();
-  // Before step 3 there is no snapshot, so every value reads "set in step 3".
-  await expect(group.getByText("set in step 3")).toHaveCount(10);
+  // Before the palette is chosen there is no snapshot, so every value reads "set in the Color lab".
+  await expect(group.getByText("set in the Color lab")).toHaveCount(10);
 });
 
 test("AC10: Harbour / Clinic booking / Mobile / None survive a reload in the fields, the selection and the rail", async ({ page }) => {
@@ -67,12 +67,12 @@ test("AC10: Harbour / Clinic booking / Mobile / None survive a reload in the fie
   await expect(h1(page, "Component library")).toBeVisible();
   await page.getByRole("radio", { name: /None/ }).click();
   await page.keyboard.press("Enter");
-  await expect(h1(page, "UX principles")).toBeVisible();
+  await expect(h1(page, "Brand colour")).toBeVisible();
 
   await page.goto("/?step=profile.identity");
   await expect(page.getByLabel("Project name", { exact: true })).toHaveValue("Harbour");
   await expect(page.getByLabel("Product type", { exact: true })).toHaveValue("Clinic booking");
-  const nav = isMobile() ? page.getByRole("navigation", { name: "Profile decisions" }) : page.locator("aside");
+  const nav = isMobile() ? page.getByRole("navigation", { name: "Profile stops" }) : page.locator("aside");
   await expect(nav).toContainText("Harbour");
   await expect(nav).toContainText("Mobile");
   await expect(nav).toContainText("None");
@@ -162,7 +162,7 @@ test("harbour: editing notes, name, type, platform and library leaves resolved b
   await expect(h1(page, "Component library")).toBeVisible();
   await page.getByRole("radio", { name: /None/ }).click();
   await page.keyboard.press("Enter");
-  await expect(h1(page, "UX principles")).toBeVisible();
+  await expect(h1(page, "Brand colour")).toBeVisible();
 
   expect((await saved(page))?.profile).toMatchObject({ name: "Nørrebro Fysioterapi", productType: "Clinic booking app", platform: "both", componentLibrary: "none", notes: "New notes" });
   expect(await resolvedBytes(page)).toBe(before);
@@ -204,7 +204,7 @@ test("library panels show the real role mapping from resolved", async ({ page })
   await expect(row(none, "--accent")).toContainText(light.accent);
   await expect(row(none, "--bg")).toContainText(light.bg);
   await expect(row(none, "--radius")).toContainText(`${file.resolved!.radius}px`);
-  await expect(page.getByText("set in step 3")).toHaveCount(0);
+  await expect(page.getByText("set in the Color lab")).toHaveCount(0);
   await expect(page.locator("main [data-v-root]")).toHaveCount(0);
 });
 
@@ -243,6 +243,7 @@ for (const stop of ["profile.identity", "profile.platform", "profile.library", "
         .map((el) => ({ el: `${el.tagName} ${el.getAttribute("aria-label") ?? el.textContent?.trim().slice(0, 30)}`, h: el.getBoundingClientRect().height }))
         .filter((x) => x.h < 44),
     );
+    // design/specs/lab-shell.md AC1: every lab and stop row is at least 44px.
     expect(small).toEqual([]);
 
     const noRing: string[] = [];

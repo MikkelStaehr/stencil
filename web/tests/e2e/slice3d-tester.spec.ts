@@ -84,7 +84,8 @@ async function tabTo(page: Page, match: (name: string) => boolean, max = 60): Pr
 }
 
 // ---------- AC8 ----------
-const LABELS = ["Project name", "Product type", "Platform", "UX principles", "Font pair", "Spacing base", "Radius", "Brand colour", "Palette", "Density"];
+// Path order (the labs: Profile, Color, Type, Space & shape, Laws).
+const LABELS = ["Project name", "Product type", "Platform", "Brand colour", "Palette", "Font pair", "Spacing base", "Radius", "Density", "UX principles"];
 const STOP_TITLE: Record<string, RegExp> = {
   "Project name": /^Name and product type\s*$/,
   "Product type": /^Name and product type\s*$/,
@@ -93,12 +94,12 @@ const STOP_TITLE: Record<string, RegExp> = {
   "Font pair": /^Font pair\s*$/,
   "Spacing base": /^Spacing\s*$/,
   Radius: /^Radius\s*$/,
-  "Brand colour": /^Brand colour\s*(to )?palette\s*$/,
+  "Brand colour": /^Brand colour\s*$/,
   Palette: /^Brand colour\s*(to )?palette\s*$/,
   Density: /^Density\s*$/,
 };
 
-test("AC8: an empty project lists the 10 decisions in wizard order, offers no export download, and its project file keeps every decision null", async ({ page }) => {
+test("AC8: an empty project lists the 10 decisions in path order, offers no export download, and its project file keeps every decision null", async ({ page }) => {
   await page.goto("/?step=export");
   await expect(h1(page)).toBeFocused();
   const names = await page.locator('section[aria-labelledby="still-open"] li button > span:first-child').allTextContents();
@@ -149,11 +150,11 @@ test("AC9: radius 8 → 0 changes only the radius lines, 0 is exported as 0px, u
   await page.goto("/?step=export");
   await expect(page.getByText("Stored values differ")).toHaveCount(0);
   const before = await downloadExports(page);
-  await press(page, "k", 4); // export → preview → density → palette → radius
+  await press(page, "k", 4); // export → preview → laws → density → radius
   await expect(h1(page)).toHaveText(/^Radius *$/);
-  await choose(page, "Radius variants", /, 0 px:/);
+  await choose(page, "Radius variants", /, 0 px:/); // choosing moves on to density
   expect((await savedFile(page)).visual.radius).toBe(0);
-  await press(page, "j", 4);
+  await press(page, "j", 3); // density → laws → preview → export
   await expect(h1(page)).toHaveText("Export");
   const after = await downloadExports(page);
 
@@ -197,12 +198,12 @@ test("AC10: a downloaded project file reopened with the keyboard restores every 
   const projectPath = info.outputPath("harbour.dwproj.json");
   await first[0].saveAs(projectPath);
 
-  await press(page, "k", 2);
+  await press(page, "k", 3); // export → preview → laws → density
   await expect(h1(page)).toHaveText(/^Density *$/);
-  await choose(page, "Density variants", /, Balanced:/);
+  await choose(page, "Density variants", /, Balanced:/); // choosing moves on to laws
   const changedDensity = (await savedFile(page)).visual.density;
   expect(changedDensity).not.toBe("compact");
-  await press(page, "j", 2);
+  await press(page, "j", 2); // laws → preview → export
   await expect(h1(page)).toHaveText("Export");
   const beforeOpen = await saved(page);
 
@@ -215,7 +216,13 @@ test("AC10: a downloaded project file reopened with the keyboard restores every 
   await expect(page.locator("#opened-title")).toHaveText("Opened harbour.dwproj.json.");
   await expect(page.locator("#opened-title")).toBeFocused();
   expect(JSON.parse((await saved(page))!).file).toBe(firstText["harbour.dwproj.json"]);
-  if (!isMobile()) await expect(page.locator('nav[aria-label="Wizard steps"]')).toContainText("Compact");
+  if (!isMobile()) {
+    // The rail expands only the current lab: visit Density (navigation is not a change) to read its value there.
+    await press(page, "k", 3);
+    await expect(page.locator('nav[aria-label="Labs"]')).toContainText("Compact");
+    await press(page, "j", 3);
+    await expect(h1(page)).toHaveText("Export");
+  }
   const reopened = await downloadExports(page);
   for (const f of EXPORTS) expect(reopened[f], f).toBe(firstText[f]);
 
@@ -227,7 +234,7 @@ test("AC10: a downloaded project file reopened with the keyboard restores every 
 
 const ENTRY: [string, (page: Page) => Locator, "desktop" | "mobile" | "both"][] = [
   ["step 5", (page) => page.locator("main section").getByRole("button", { name: "Open project file…" }), "both"],
-  ["the rail", (page) => page.locator('nav[aria-label="Wizard steps"]').getByRole("button", { name: "Open project file…" }), "desktop"],
+  ["the rail", (page) => page.locator('nav[aria-label="Labs"]').getByRole("button", { name: "Open project file…" }), "desktop"],
   ["the mobile header", (page) => page.locator("header").getByRole("button", { name: "Open file" }), "mobile"],
 ];
 for (const [where, button, only] of ENTRY) {
@@ -289,8 +296,8 @@ test("markDownloaded: DESIGN.md alone saves nothing; the project file makes it c
   await downloadVia(page, page.getByRole("button", { name: "Download harbour.dwproj.json" }));
   await expect(status(page)).toContainText("PROJECT FILE UP TO DATE");
   expect(JSON.parse((await saved(page))!).downloadedAt).not.toBeNull();
-  await press(page, "k", 2);
-  await choose(page, "Density variants", /, Balanced:/);
+  await press(page, "k", 3); // export → preview → laws → density
+  await choose(page, "Density variants", /, Balanced:/); // choosing moves on to laws
   await press(page, "j", 2);
   await expect(status(page)).toContainText(/UNSAVED SINCE \d\d:\d\d/);
 });
@@ -404,7 +411,7 @@ test("opened notice: Undo open disappears after the next decision change", async
   await page.goto("/?step=export");
   await page.locator("main section input[type=file]").setInputFiles(resolve("fixtures/edge-name.project.json"));
   await expect(page.locator("#opened-title")).toBeVisible();
-  await press(page, "k", 2);
+  await press(page, "k", 3); // export → preview → laws → density
   await expect(page.locator("#opened-title")).toBeVisible(); // navigation is not a change
   await page.getByRole("radiogroup", { name: "Density variants" }).locator('[role="radio"][aria-checked="false"]').first().click();
   await page.getByRole("button", { name: /^Choose / }).click();

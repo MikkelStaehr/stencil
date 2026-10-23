@@ -75,9 +75,10 @@ test("open vs decided: unticking the last law is open (null); Decide on no rules
   await expect.poll(async () => (await saved(page)).principles).toBeNull();
 });
 
-test("keyboard only through step 2; rows are at least 44px and nothing overflows", async ({ page }) => {
+test("keyboard only through the Laws stop; rows are at least 44px and nothing overflows", async ({ page }) => {
   await seed(page, (p) => void (p.principles = null));
-  await page.goto("/?step=profile.library");
+  // Laws come after Density on the path (Space & shape is the lab before Laws).
+  await page.goto("/?step=visual.density");
   await page.locator("main h1").focus();
   await page.keyboard.press("j");
   await expect(page.locator("main h1")).toBeFocused();
@@ -110,6 +111,8 @@ test("keyboard only through step 2; rows are at least 44px and nothing overflows
   await expect(page.locator("main h1")).not.toHaveText("UX principles");
   await page.keyboard.press("k");
   await expect(page.locator("main h1")).toHaveText("UX principles");
+  // This seed (principles null beside a stored snapshot) is rejected by the parser, so the visual decisions are open
+  // and the last decided stop before Laws is the component library (never open).
   await page.keyboard.press("e");
   await expect(page.locator("main h1")).toHaveText("Component library");
   expect((await saved(page)).principles?.map((p) => p.lawId)).toEqual(["fitts", "wcag-contrast"]);

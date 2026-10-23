@@ -6,11 +6,13 @@ import { expect, test, type Page } from "@playwright/test";
 const isMobile = () => test.info().project.name === "mobile-390";
 
 async function openSpacing(page: Page) {
-  await page.goto("/?step=visual.fontPair");
-  await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();
+  // J reaches the next stop on the keyboard; on 390 the rail is hidden, so use the lab's stop list there. Font pair is
+  // the Type lab's only stop (no list), so 390 starts from Radius, in the same lab as Spacing.
+  const [from, title] = isMobile() ? ["visual.radius", "Radius"] : ["visual.fontPair", "Font pair"];
+  await page.goto(`/?step=${from}`);
+  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
   await expect(page.locator("main [data-v-root]").first()).toBeVisible();
-  // J reaches the next sub-decision on the keyboard; on 390 the rail is hidden, so use the decision list there.
-  if (isMobile()) await page.getByRole("navigation", { name: "Visual decisions" }).getByRole("button", { name: /Spacing/ }).click();
+  if (isMobile()) await page.getByRole("navigation", { name: "Space & shape stops" }).getByRole("button", { name: /Spacing/ }).click();
   else await page.keyboard.press("j");
   await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
 }
@@ -54,10 +56,10 @@ test("leak: choosing another palette or font pair leaves the chrome h1 font and 
   await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
   expect(await chromeH1Style(page)).toEqual(before);
 
-  // Palette: enter a brand colour, then choose Deep (the most different palette).
-  await page.goto("/?step=visual.palette");
+  // Palette: enter a brand colour on its own stop (Enter moves on to the palette), then choose Deep (the most different palette).
+  await page.goto("/?step=visual.brandHex");
   await page.getByLabel("Brand colour").fill("#0F766E");
-  await page.getByLabel("Brand colour").blur();
+  await page.getByLabel("Brand colour").press("Enter");
   const palettes = page.getByRole("radiogroup", { name: "Palette variants" }).getByRole("radio");
   await expect(palettes).toHaveCount(3);
   await expect(page.locator("main [data-v-root]").first()).toBeVisible();
@@ -66,7 +68,7 @@ test("leak: choosing another palette or font pair leaves the chrome h1 font and 
   expect(await chromeH1Style(page)).toEqual(before);
 });
 
-test("keyboard: 1/2/3 then Enter records a decision; J and K move between sub-decisions", async ({ page }) => {
+test("keyboard: 1/2/3 then Enter records a decision; J and K move between stops", async ({ page }) => {
   test.skip(isMobile(), "The keyboard flow is a desktop feature; the rail that shows it is hidden at 390.");
   await page.goto("/?step=visual.fontPair");
   await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();
@@ -82,17 +84,19 @@ test("keyboard: 1/2/3 then Enter records a decision; J and K move between sub-de
   await expect(radios.nth(1)).toHaveAttribute("aria-checked", "false");
   await page.keyboard.press("Enter");
 
-  // Recorded: the rail shows the value, and the step moved to the next open sub-decision.
+  // Recorded: the stop moved on to the next stop, and the rail shows the value (only the current lab is expanded,
+  // so the Type lab reads 1 of 1 decided here and shows Font pair's value once it is the current lab again).
   await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
-  const rail = page.getByRole("navigation", { name: "Wizard steps" });
-  await expect(rail.getByRole("button", { name: /Font pair\s*Sora \+ Inter/ })).toBeVisible();
-  await expect(rail.getByRole("button", { name: /Spacing\s*now/ })).toHaveAttribute("aria-current", "true");
+  const rail = page.getByRole("navigation", { name: "Labs" });
+  await expect(rail.locator("li", { has: page.getByRole("button", { name: /^Type \d+ of \d+ decided$/ }) })).toContainText("1 of 1 decided");
+  await expect(rail.getByRole("button", { name: /Spacing\s*open/ })).toHaveAttribute("aria-current", "step");
 
   await page.keyboard.press("j");
   await expect(page.getByRole("heading", { level: 1, name: "Radius" })).toBeVisible();
   await page.keyboard.press("k");
   await page.keyboard.press("k");
   await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();
+  await expect(rail.getByRole("button", { name: /Font pair\s*Sora \+ Inter/ })).toHaveAttribute("aria-current", "step");
   await page.keyboard.press("j");
   await page.keyboard.press("e");
   await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();

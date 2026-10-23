@@ -28,5 +28,6 @@ test("AC6: every clickable element in the shell is at least 44px tall", async ({
       }),
   );
   test.info().annotations.push({ type: "clickables", description: JSON.stringify(items) });
+  // design/specs/lab-shell.md AC1: every lab and stop row is at least 44px.
   for (const it of items) expect(it.h, `${it.tag} "${it.text}"`).toBeGreaterThanOrEqual(44);
 });

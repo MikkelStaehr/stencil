@@ -131,7 +131,7 @@ export function PaletteDecision({ visual, productName, onChoose, onMove }: Decis
       {/* The brand colour is read-only here (5a decision); it is changed on its own stop. */}
       <p className="mt-3 text-small text-dw-text-muted">
         {brand === null ? "No brand colour yet. " : <>From brand colour <span className="font-mono font-medium text-dw-text">{brand}</span>. </>}
-        <button type="button" onClick={() => onMove("visual.brandHex")} className="rounded-sm font-medium text-dw-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus">
+        <button type="button" onClick={() => onMove("visual.brandHex")} className="inline-flex min-h-11 items-center rounded-sm font-medium text-dw-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus">
           {brand === null ? "Pick the brand colour" : "Change the brand colour"}
         </button>
       </p>

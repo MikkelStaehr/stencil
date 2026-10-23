@@ -67,7 +67,7 @@ test("name validation: the error sits next to the field, the input is kept and t
   expect(stored === null || !/[\r\n]/.test(stored)).toBe(true);
 });
 
-test("step 1 by keyboard alone, and J/K/E across steps", async ({ page }) => {
+test("the Profile lab by keyboard alone, and J/K/E across stops", async ({ page }) => {
   await page.goto("/");
   await expect(h1(page, "Name and product type")).toBeVisible();
   await expect(page.getByLabel("Project name", { exact: true })).toBeFocused();
@@ -83,7 +83,8 @@ test("step 1 by keyboard alone, and J/K/E across steps", async ({ page }) => {
   await expect(h1(page, "Component library")).toBeVisible();
   await page.keyboard.press("2");
   await page.keyboard.press("Enter");
-  await expect(h1(page, "UX principles")).toBeVisible();
+  // The library moves on to the next stop on the path: the brand colour, first stop of the Color lab.
+  await expect(h1(page, "Brand colour")).toBeVisible();
 
   await page.keyboard.press("e");
   await expect(h1(page, "Component library")).toBeVisible();
@@ -93,7 +94,7 @@ test("step 1 by keyboard alone, and J/K/E across steps", async ({ page }) => {
   await page.keyboard.press("j");
   await page.keyboard.press("j");
   await page.keyboard.press("j");
-  await expect(h1(page, "UX principles")).toBeVisible();
+  await expect(h1(page, "Brand colour")).toBeVisible();
 
   const file = await saved(page);
   expect(file?.profile).toMatchObject({ name: "Harbour", productType: "Clinic booking jk123", platform: "mobile", componentLibrary: "none" });

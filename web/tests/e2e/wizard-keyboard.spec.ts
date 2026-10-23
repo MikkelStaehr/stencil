@@ -30,7 +30,7 @@ async function tabToId(page: Page, id: string, max = 40) {
 test("an empty project to the four exported files by keyboard alone", async ({ page }) => {
   await page.goto("/");
 
-  // Step 1: the name field has focus on arrival.
+  // Profile: the name field has focus on arrival.
   await expect(page.getByLabel("Project name", { exact: true })).toBeFocused();
   await page.keyboard.type("Pier Clinic");
   await page.keyboard.press("Tab");
@@ -41,33 +41,33 @@ test("an empty project to the four exported files by keyboard alone", async ({ p
   await step(page, "Component library");
   await pick(page, 1);
 
-  // Step 2: one law, ticked with Space; Enter continues.
-  await step(page, "UX principles");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Space");
-  await expect(page.locator("main input[type=checkbox]").first()).toBeChecked();
+  // Color: the brand colour is typed on its own stop; Enter in the field records it and moves on to the palette.
+  await step(page, "Brand colour");
+  await tabToId(page, "brand-hex");
+  await page.keyboard.type("#0F766E");
   await page.keyboard.press("Enter");
+  await expect(h1(page)).toHaveText(/palette/i);
+  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
+  await pick(page, 1);
 
-  // Step 3: every visual decision.
+  // Type, Space & shape: every visual decision.
   await step(page, /^Font pair/);
   await pick(page, 2);
   await step(page, /^Spacing/);
   await pick(page, 2);
   await step(page, /^Radius/);
   await pick(page, 3);
-  await expect(h1(page)).toHaveText(/palette/i);
-  await tabToId(page, "brand-hex");
-  await page.keyboard.type("#0F766E");
-  await page.keyboard.press("Tab");
-  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
-  await pick(page, 1);
   await step(page, /^Density/);
   await pick(page, 2);
-  // The last visual decision stays on its stop (nothing open after it in step 3); J moves on.
-  await expect(page.locator('main [role="radio"][aria-checked="true"]')).toHaveCount(1);
-  await page.keyboard.press("j");
 
-  // Step 4 → 5: Continue to export is the primary (Enter).
+  // Laws: one law, ticked with Space; Enter continues.
+  await step(page, "UX principles");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Space");
+  await expect(page.locator("main input[type=checkbox]").first()).toBeChecked();
+  await page.keyboard.press("Enter");
+
+  // Preview → Export: Continue to export is the primary (Enter).
   await step(page, "Live preview");
   await page.keyboard.press("Enter");
   await step(page, "Export");

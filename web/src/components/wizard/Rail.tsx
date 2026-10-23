@@ -40,15 +40,15 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
                 {String(lab.number).padStart(2, "0")}
               </span>
               <span className="flex min-w-0 flex-col">
-                {/* Every lab name opens the lab at its first open stop; the current lab is already open. */}
+                {/* The lab name and summary open the lab at its first open stop: one 44px target. */}
                 <button
                   type="button"
                   onClick={() => onPick(entryStop(project, lab.id))}
-                  className="-mx-1 rounded-sm px-1 text-left font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus"
+                  className="-mx-1 flex min-h-11 flex-col justify-center rounded-sm px-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus"
                 >
-                  {lab.title}
+                  <span className="font-medium">{lab.title}</span>
+                  <span className="text-small text-dw-text-muted">{labSummary(project, lab.id, openCount)}</span>
                 </button>
-                <span className="text-small text-dw-text-muted">{labSummary(project, lab.id, openCount)}</span>
                 {isCurrent && (
                   <span className="mt-1.5 -ml-1.5 block">
                     <StopList rows={labRows(project, lab.id, openCount)} current={stop} onPick={onPick} mark />

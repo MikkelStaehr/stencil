@@ -47,7 +47,7 @@ test("selecting a variant updates the preview within 100 ms, before Choose; choo
   await expect(page.locator("#preview-label")).toHaveText(/Live preview · 14 px/i);
   await expect(column(page).locator("figcaption")).toContainText("radius 14 px");
 
-  // Harbour has every decision made, so choosing stays on Radius (nothing open to move to).
+  // Choosing moves on to the next stop (Density); the side panel's preview keeps the chosen radius.
   await page.getByRole("button", { name: /Choose 14 px/ }).click();
   await expect.poll(() => page.evaluate((key) => JSON.parse(JSON.parse(localStorage.getItem(key)!).file).visual.radius, KEY)).toBe(14);
   expect(await previewVar(page, "--v-radius")).toBe("14px");
@@ -110,10 +110,12 @@ test("AC2: the preview makes no request outside localhost", async ({ page }) => 
   expect(all.filter((u) => !u.startsWith("http://localhost:") && !u.startsWith("data:") && !u.startsWith("blob:"))).toEqual([]);
 });
 
-test("step 4: J from density and ?step=preview land there, and each decision row reopens its stop", async ({ page }) => {
+test("preview: J from Laws and ?step=preview land there, and each decision row reopens its stop", async ({ page }) => {
   await seedHarbour(page);
-  await page.goto("/?step=visual.density");
-  await expect(h1(page, "Density")).toBeVisible();
+  // Laws is the stop before the sample screen on the path.
+  await page.goto("/?step=principles");
+  await expect(h1(page, "UX principles")).toBeVisible();
+  await page.locator("main h1").focus();
   await page.keyboard.press("j");
   await expect(h1(page, "Live preview")).toBeVisible();
   await expect(page.getByRole("button", { name: "Continue to export Enter" })).toBeVisible();

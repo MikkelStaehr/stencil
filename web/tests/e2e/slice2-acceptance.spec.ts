@@ -115,7 +115,7 @@ test("AC2/AC3/AC4: every font pair and every sub-decision, only localhost reques
   }
   expect(pairsSeen.size).toBe(7);
 
-  // Font pair: choose the 2nd on page 1, then spacing, radius, palette, density with a non-default variant.
+  // Font pair: choose the 2nd on page 1, then spacing, radius, density and palette with a non-default variant.
   await page.keyboard.press("2");
   await page.keyboard.press("Enter");
   for (const [h1, group] of [["Spacing", "Spacing variants"], ["Radius", "Radius variants"]] as const) {
@@ -127,19 +127,21 @@ test("AC2/AC3/AC4: every font pair and every sub-decision, only localhost reques
     await page.keyboard.press("Enter");
     expect(await chrome(page)).toEqual(before);
   }
-  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
-  await page.locator("#brand-hex").fill("#FFFF00");
-  await page.locator("#brand-hex").press("Tab");
-  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
-  await expectLayout(page, "Palette variants", 3);
-  expect(await platesRenderOwnFonts(page)).toEqual([[], [], []]);
-  await page.keyboard.press("3");
-  await page.keyboard.press("Enter");
-  expect(await chrome(page)).toEqual(before);
   await expect(page.getByRole("heading", { level: 1, name: "Density" })).toBeVisible();
   await expectLayout(page, "Density variants", 3);
   expect(await platesRenderOwnFonts(page)).toEqual([[], [], []]);
   await page.keyboard.press("2");
+  await page.keyboard.press("Enter");
+  expect(await chrome(page)).toEqual(before);
+  // The palette comes before the font pair on the path (Color lab), after the brand colour's own stop.
+  await page.goto("/?step=visual.brandHex");
+  await page.locator("#brand-hex").fill("#FFFF00");
+  await page.locator("#brand-hex").press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
+  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
+  await expectLayout(page, "Palette variants", 3);
+  expect(await platesRenderOwnFonts(page)).toEqual([[], [], []]);
+  await page.keyboard.press("3");
   await page.keyboard.press("Enter");
   expect(await chrome(page)).toEqual(before);
   expect(external).toEqual([]);
@@ -174,23 +176,15 @@ test("AC6: every clickable row in step 3 is at least 44px, on every sub-decision
     const small = await smallTargets(page);
     if (small.length) found[s] = small;
   }
+  // design/specs/lab-shell.md AC1: every lab and stop row, and every button, is >= 44px.
   expect(found).toEqual({});
 });
 
 test("AC6/AC7/saved: step 3 by keyboard alone with visible focus, brand typed; decisions autosave, resolve and survive reload", async ({ page }) => {
   await seed(page, openVisual);
-  await page.goto("/?step=visual.fontPair");
-  await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();
-  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
-  await page.keyboard.press("3");
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
-  await page.keyboard.press("1");
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1, name: "Radius" })).toBeVisible();
-  await page.keyboard.press("1");
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
+  // The Color lab comes first on the path: the brand colour's own stop, then the palette.
+  await page.goto("/?step=visual.brandHex");
+  await expect(page.getByRole("heading", { level: 1, name: "Brand colour" })).toBeVisible();
 
   // Reach the brand field with Tab only; every stop must show a focus indicator.
   const unfocused: string[] = [];
@@ -211,12 +205,24 @@ test("AC6/AC7/saved: step 3 by keyboard alone with visible focus, brand typed; d
   expect.soft(unfocused).toEqual([]);
   await page.keyboard.type(" #abc ");
   await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
   await expect(page.locator("main [data-v-root]")).toHaveCount(3);
   await page.keyboard.press("2");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: "Font pair" })).toBeVisible();
+  await expect(page.locator("main [data-v-root]")).toHaveCount(3);
+  await page.keyboard.press("3");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
+  await page.keyboard.press("1");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: "Radius" })).toBeVisible();
+  await page.keyboard.press("1");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1, name: "Density" })).toBeVisible();
   await page.keyboard.press("3");
   await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 1, name: "UX principles" })).toBeVisible();
 
   const saved = await page.evaluate((k) => JSON.parse(JSON.parse(localStorage.getItem(k)!).file), KEY);
   expect(saved.visual).toMatchObject({ spacingBase: 4, radius: 0, brandHex: "#AABBCC", paletteVariant: "tinted", density: "airy" });
@@ -224,18 +230,20 @@ test("AC6/AC7/saved: step 3 by keyboard alone with visible focus, brand typed; d
   expect(saved.resolved).not.toBeNull();
   expect(saved.resolved.color.light ?? saved.resolved.color).toBeTruthy();
 
-  // E goes back to the last decided sub-decision; J/K move.
+  // E goes back to the last decided stop; J/K move.
   await page.keyboard.press("e");
-  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Density" })).toBeVisible();
   await page.keyboard.press("k");
   await expect(page.getByRole("heading", { level: 1, name: "Radius" })).toBeVisible();
   await page.keyboard.press("j");
-  await expect(page.getByRole("heading", { level: 1, name: /palette/i })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Density" })).toBeVisible();
 
   await page.reload();
-  await expect(page.locator("main [data-v-root]").first()).toBeVisible();
-  await page.goto("/?step=visual.palette");
+  await expect(page.locator("main h1")).toBeVisible();
+  await page.goto("/?step=visual.brandHex");
   await expect(page.locator("#brand-hex")).toHaveValue("#AABBCC");
+  await page.goto("/?step=visual.palette");
+  await expect(page.getByText("From brand colour #AABBCC.")).toBeVisible();
   await expect(page.getByRole("radio", { checked: true })).toHaveAccessibleName(/Tinted/);
   const after = await page.evaluate((k) => JSON.parse(JSON.parse(localStorage.getItem(k)!).file), KEY);
   expect(after.visual).toEqual(saved.visual);
@@ -245,7 +253,13 @@ test("AC6/AC7/saved: step 3 by keyboard alone with visible focus, brand typed; d
 });
 
 test("AC7: brand field validates on blur, keeps the input, puts the error next to it, accepts valid forms", async ({ page }) => {
-  await page.goto("/?step=visual.palette");
+  // The field is on the brand colour's own stop and the palettes on the next one, so the saved value is the proof.
+  const savedBrand = () =>
+    page.evaluate((k) => {
+      const raw = localStorage.getItem(k);
+      return raw === null ? null : (JSON.parse(JSON.parse(raw).file).visual.brandHex as string | null);
+    }, KEY);
+  await page.goto("/?step=visual.brandHex");
   const field = page.locator("#brand-hex");
   await field.fill("teal");
   await expect(page.locator("#brand-hex-error")).toHaveCount(0); // not while typing, before the first blur
@@ -259,14 +273,14 @@ test("AC7: brand field validates on blur, keeps the input, puts the error next t
     await expect(field).toHaveAttribute("aria-describedby", "brand-hex-error");
     const [fb, ab] = [await field.boundingBox(), await alert.boundingBox()];
     expect(ab!.y - (fb!.y + fb!.height)).toBeLessThan(24);
-    await expect(page.locator("main [data-v-root]")).toHaveCount(0);
+    expect(await savedBrand()).toBeNull();
   }
   for (const [ok, norm] of [["0f766e", "#0F766E"], [" #ABC ", "#AABBCC"], ["#000", "#000000"], ["#FFF", "#FFFFFF"], ["#777", "#777777"], ["#FFFF00", "#FFFF00"]]) {
     await field.fill(ok);
     await field.blur();
     await expect(field).toHaveValue(norm);
     await expect(page.locator("#brand-hex-error")).toHaveCount(0);
-    await expect(page.getByRole("radiogroup", { name: "Palette variants" }).getByRole("radio")).toHaveCount(3);
+    await expect.poll(savedBrand).toBe(norm);
   }
 });
 
@@ -285,7 +299,7 @@ test("saved: a spacing base of 5 (not a fixed candidate) shows as chosen", async
 });
 
 test("AC6: the brand colour field shows a visible focus indicator when reached by keyboard", async ({ page }) => {
-  await page.goto("/?step=visual.palette");
+  await page.goto("/?step=visual.brandHex");
   const field = page.locator("#brand-hex");
   await expect(field).toBeVisible();
   const look = () =>

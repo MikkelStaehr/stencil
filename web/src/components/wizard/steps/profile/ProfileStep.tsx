@@ -126,7 +126,7 @@ function LibraryPanel({ library, project }: { library: ComponentLibrary; project
             </th>
             <td className="py-1.5 text-right whitespace-nowrap">
               {r.value === null ? (
-                <span className="text-dw-text-muted">set in step 3</span>
+                <span className="text-dw-text-muted">set in the Color lab</span>
               ) : (
                 <span className="inline-flex items-center gap-1.5">
                   {r.hex !== null && <span aria-hidden="true" className="inline-block size-2.5 border border-dw-line" style={{ background: r.hex }} />}
