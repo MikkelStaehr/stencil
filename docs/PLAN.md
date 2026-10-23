@@ -156,17 +156,23 @@ Every slice and task of the project, in order. Status is never written here; it 
 | 3g | Slices table, Slice commit line, team install and run-web merge | S |
 | 3h | The name Stencil in visible app and export text (not the strings Mainframe matches) | S |
 | 4a | Motion part A: motion tokens and section in DESIGN.md, seven motion laws, app patterns, INSPIRATION.md, run-web merge | M |
-| 4b | Chrome family: Stencil joins Mainframe's look (dark by default, Dark/Light toggle, Geist Mono, orange only in the rail); plates and preview unchanged | M |
+| 4b | Chrome family: Stencil joins Mainframe's look (dark by default, theme toggle, Geist Mono) | M |
 | 5a | Labs: the lab-pattern sketch (static HTML in design/labs/, design-lead only), approved by the user before any build | M |
 | 5b | Labs: the shell into labs (rail = labs + stops, ?lab=, J/K path, existing views moved); goldens byte-identical | L |
-| 5b2 | Labs: shell follow-ups (ContrastTable as the side-panel readout, the pass count under each plate, the "in use" / "not used yet" preview caption, the 390 top-bar rail) | M |
-| 5c | Labs: Color lab (contrast matrix, Fix through colorOverrides, colour-blindness view, shades on screen, Candidate + labInput) | L |
+| 5b2 | Labs: shell follow-ups (side-panel readout, pass count, preview caption, 390 top-bar rail) | M |
+| 5c | Labs: Color lab (contrast matrix, Fix, colour-blindness view, shades, Candidate + labInput) | L |
 | 5d | Labs: Type lab (specimens in the project's own text, scale in px and rem, line length) | L |
 | 5e | Labs: profile, laws, space & shape and export in the lab pattern | M |
 | 5f | Labs: Preview lab (a real 390 px frame, social cards 1200×630, 1080×1080, 1080×1350) | L |
 | 5g | Labs: the v2 bundle (Stencil name and extension, motion part B, shades in tokens.json, migration, autosave key) | L |
 | 5h | Labs: Motion lab | M |
 | 5i | Labs: Brand lab (one board, PDF through print, SVG) | L |
+
+Titles stay at 120 characters or less (Mainframe reads the table). Details of the shortened rows:
+
+- **4b:** a Dark/Light toggle; orange only in the rail; plates and the live preview unchanged.
+- **5b2:** ContrastTable as the Color readout in the side panel, the pass count under each plate, the "in use" / "not used yet" preview caption, and the 390 top-bar rail.
+- **5c:** the Fix goes through `colorOverrides`; shades 50–950 shown on screen; the `Candidate` shape and `labInput`; `accent / surface` joins the export's contrast check.
 
 ## Plan (one commit per step; no building until the user says go)
 
