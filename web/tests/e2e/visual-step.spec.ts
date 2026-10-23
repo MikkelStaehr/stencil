@@ -12,7 +12,7 @@ async function openSpacing(page: Page) {
   await page.goto(`/?step=${from}`);
   await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
   await expect(page.locator("main [data-v-root]").first()).toBeVisible();
-  if (isMobile()) await page.getByRole("navigation", { name: "Space & shape stops" }).getByRole("button", { name: /Spacing/ }).click();
+  if (isMobile()) await page.getByRole("navigation", { name: "All labs" }).getByRole("button", { name: /Spacing/ }).click();
   else await page.keyboard.press("j");
   await expect(page.getByRole("heading", { level: 1, name: "Spacing" })).toBeVisible();
 }

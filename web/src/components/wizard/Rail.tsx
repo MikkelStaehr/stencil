@@ -108,3 +108,44 @@ function lawsValue(p: ProjectFile): string | null {
   const n = p.principles.length;
   return n === 0 ? "No rules" : `${n} ${n === 1 ? "rule" : "rules"}`;
 }
+
+/**
+ * ≤760px, where the rail is hidden: every lab as a 44px row, the current one expanded to its stops, at the end of the
+ * work surface (user, 2026-10-23: all 7 labs, like the rail). No orange: at ≤760px only the hollow mark is orange.
+ */
+export function LabOverview({ project, stop, onPick }: { project: ProjectFile; stop: StopId; onPick: (id: StopId) => void }) {
+  const current = labOfStop(stop).id;
+  const openCount = openDecisions(project).length;
+  return (
+    <nav aria-label="All labs" className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
+      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">All labs</p>
+      <ol className="mt-1 flex flex-col">
+        {LABS.map((lab) => {
+          const isCurrent = lab.id === current;
+          return (
+            <li key={lab.id} aria-current={isCurrent ? "true" : undefined} className="border-t border-dw-line first:border-t-0">
+              <button
+                type="button"
+                onClick={() => onPick(entryStopOfLab(project, lab.id))}
+                className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-sm px-1.5 text-left transition-colors duration-(--duration-fast) ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus ${
+                  isCurrent ? "font-medium text-dw-text" : "text-dw-text-muted hover:bg-dw-hover"
+                }`}
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="font-mono text-label tabular-nums">{String(lab.number).padStart(2, "0")}</span>
+                  <span>{lab.title}</span>
+                </span>
+                <span className="shrink-0 font-mono text-label font-normal">{labSummary(project, lab.id, openCount)}</span>
+              </button>
+              {isCurrent && (
+                <div className="pb-2 pl-6">
+                  <StopList rows={labRows(project, lab.id, openCount)} current={stop} onPick={onPick} />
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}

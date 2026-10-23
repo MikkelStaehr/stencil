@@ -282,8 +282,8 @@ test("C9: the palette stop shows the brand colour read-only; with none it offers
   const fresh = await page.context().newPage();
   await fresh.goto("/?step=visual.paletteVariant");
   await expect(h1(fresh)).toBeVisible();
-  await expect(fresh.locator("main")).toContainText("No brand colour yet.");
-  await fresh.getByRole("button", { name: "Pick the brand colour" }).click();
+  await expect(fresh.locator("main")).toContainText("Enter the brand colour at stop 4");
+  await fresh.getByRole("button", { name: "Go to Brand colour" }).click();
   await expect(h1(fresh)).toHaveText("Brand colour");
 });
 

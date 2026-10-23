@@ -10,6 +10,7 @@ import { projectStore } from "@/data/project/store";
 import { PlateGrid } from "@/components/plate/PlateGrid";
 import { ContrastTable } from "@/components/wizard/ContrastTable";
 import { ownsKey } from "@/components/wizard/use-shortcuts";
+import { SECONDARY } from "@/components/wizard/classes";
 import { fontPairLabel, type DecisionProps } from "./model";
 
 /**
@@ -144,20 +145,25 @@ export function PaletteDecision({ visual, productName, onChoose, onMove }: Decis
 
   return (
     <>
-      {/* The brand colour is read-only here (5a decision); it is changed on its own stop. */}
-      <p className="mt-3 text-small text-dw-text-muted">
-        {brand === null ? "No brand colour yet. " : <>From brand colour <span className="font-mono font-medium text-dw-text">{brand}</span>. </>}
-        <button type="button" onClick={() => onMove("visual.brandHex")} className="inline-flex min-h-11 items-center rounded-sm font-medium text-dw-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus">
-          {brand === null ? "Pick the brand colour" : "Change the brand colour"}
-        </button>
-      </p>
+      {/* The brand colour is read-only here (5a decision); it is changed on its own stop (design/specs/lab-shell.md §3). */}
       {brand === null ? (
-        <p className="mt-5 border border-dashed border-dw-ctl px-4 py-6 text-dw-text-muted">
-          Three palettes appear here once the brand colour is set, each with its contrast checked.
+        <div className="mt-5 flex flex-col items-start gap-3 border border-dashed border-dw-ctl px-4 py-6 text-dw-text-muted">
+          <p>Enter the brand colour at stop 4 to see three palettes built from it, each with its contrast checked.</p>
+          <button type="button" onClick={() => onMove("visual.brandHex")} className={SECONDARY}>
+            Go to Brand colour
+          </button>
+        </div>
+      ) : (
+        <p className="mt-3 text-small text-dw-text-muted">
+          From brand colour <span className="font-mono font-medium text-dw-text">{brand}</span>. To change it, go back to{" "}
+          <button type="button" onClick={() => onMove("visual.brandHex")} className="inline-flex min-h-11 items-center rounded-sm font-medium text-dw-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus">
+            Brand colour
+          </button>
         </p>
-      ) : options.length === 0 ? (
+      )}
+      {brand === null ? null : options.length === 0 ? (
         <p role="status" className="mt-5 border border-dashed border-dw-ctl px-4 py-6 text-dw-text-muted">
-          No palette built from {brand} passes every contrast pair. Try a darker or lighter brand colour.
+          No palette built from {brand} passes every contrast pair. Try a darker or lighter brand colour at stop 4.
         </p>
       ) : (
         <PlateGrid

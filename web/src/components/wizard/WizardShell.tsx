@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { firstOpenStop, labOfStop, lastDecidedStopBefore, nextStop, openDecisions, pathPosition, prevStop, stopFromLink, stopsOfLab, type StopId, type VisualKey } from "@/domain/decisions";
+import { firstOpenStop, labOfStop, lastDecidedStopBefore, nextStop, pathPosition, prevStop, stopFromLink, STOPS, type StopId, type VisualKey } from "@/domain/decisions";
 import { projectStore, useProject } from "@/data/project/store";
 import { ownsKey } from "./use-shortcuts";
-import { labRows, Rail } from "./Rail";
-import { StopList } from "./SubDecisionList";
+import { LabOverview, Rail } from "./Rail";
 import { BrandStop } from "./steps/visual/palette";
 import { SnapshotNotice } from "./SnapshotNotice";
 import { VisualStep } from "./steps/visual/VisualStep";
@@ -78,10 +77,13 @@ export function WizardShell() {
   return (
     <div className="min-h-dvh min-[761px]:grid min-[761px]:grid-cols-[200px_minmax(0,1fr)] min-[1101px]:grid-cols-[232px_minmax(0,1fr)_340px]">
       <header className="flex min-h-11 flex-wrap items-center justify-between gap-y-2 border-b border-dw-line bg-dw-rail px-4 min-[761px]:hidden">
-        <span className="font-mono text-label font-medium tracking-[0.08em] uppercase">Stencil</span>
-        <span className="flex items-center gap-3">
+        <span className="flex min-w-0 items-center gap-2 font-mono text-label font-medium tracking-[0.08em] uppercase">
+          <span aria-hidden="true" className="inline-block size-3 shrink-0 rounded-2xs border-[1.5px] border-dw-accent" />
+          <span className="truncate">Stencil{productName ? ` · ${productName}` : ""}</span>
+        </span>
+        <span className="flex flex-wrap items-center gap-3">
           <span className="font-mono text-label text-dw-text-muted">
-            Stop {at.n} of {at.total}
+            Stop {at.n} of {at.total} · {STOPS.find((s) => s.id === stop)?.label}
           </span>
           <ThemeToggle compact />
           {hydrated && <OpenProjectButton label="Open file" buttonClass="px-3" />}
@@ -132,15 +134,8 @@ export function WizardShell() {
         {stop === "principles" && <PrinciplesStep project={project} onMove={setPicked} />}
         {stop === "preview" && <PreviewStep project={project} onMove={setPicked} />}
         {stop === "export" && <ExportStep project={project} onMove={setPicked} />}
-        {/* ≤760px has no rail: the current lab's stops sit under the work surface instead. */}
-        {stopsOfLab(lab.id).length > 1 && (
-          <nav aria-label={`${lab.title} stops`} className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
-            <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">{lab.title} stops</p>
-            <div className="mt-1">
-              <StopList rows={labRows(project, lab.id, openDecisions(project).length)} current={stop} onPick={setPicked} />
-            </div>
-          </nav>
-        )}
+        {/* ≤760px has no rail: every lab, the current one with its stops, sits under the work surface instead. */}
+        <LabOverview project={project} stop={stop} onPick={setPicked} />
           </>
         )}
       </main>

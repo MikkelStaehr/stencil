@@ -186,8 +186,10 @@ test("step 4: the legend lists only J/K and E, and main's only primary is Contin
   await seed(page, harbour());
   await page.goto("/?step=preview");
   await expect(page.getByRole("heading", { level: 1, name: "Live preview" })).toBeVisible();
-  const buttons = await page.getByRole("main").getByRole("button").allInnerTexts();
-  const names = await page.getByRole("main").getByRole("button").evaluateAll((els) => els.map((e) => e.textContent?.trim() ?? ""));
+  // The ≤760px lab overview (5b2) is navigation, not the stop's own controls.
+  const own_ = page.getByRole("main").locator('button:not(nav[aria-label="All labs"] button)');
+  const buttons = await own_.allInnerTexts();
+  const names = await own_.evaluateAll((els) => els.map((e) => e.textContent?.trim() ?? ""));
   // The 3a snapshot notice (Keep stored values / Recompute now) is not part of step 4.
   const own = names.filter((n) => !/^(Keep stored values|Recompute now|Continue to exportEnter)$/.test(n));
   expect(names.filter((n) => n === "Continue to exportEnter")).toHaveLength(1);

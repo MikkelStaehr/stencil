@@ -160,8 +160,8 @@ Every slice and task of the project, in order. Status is never written here; it 
 | 4b | Chrome family: Stencil joins Mainframe's look (dark by default, theme toggle, Geist Mono) | M |
 | 5a | Labs: the lab-pattern sketch (static HTML in design/labs/, design-lead only), approved by the user before any build | M |
 | 5b | Labs: the shell into labs (rail = labs + stops, ?lab=, J/K path, existing views moved); goldens byte-identical | L |
-| 5b2 | Labs: shell follow-ups (side-panel readout, pass count, preview caption, 390 top-bar rail) | M |
-| 5c | Labs: Color lab (contrast matrix, Fix, colour-blindness view, shades, Candidate + labInput) | L |
+| 5b2 | Labs: shell follow-ups (preview caption, 390 header, all labs at ≤760px, spec wording) | M |
+| 5c | Labs: Color lab (contrast matrix, readout, Fix, colour-blindness view, shades, Candidate + labInput) | L |
 | 5d | Labs: Type lab (specimens in the project's own text, scale in px and rem, line length) | L |
 | 5e | Labs: profile, laws, space & shape and export in the lab pattern | M |
 | 5f | Labs: Preview lab (a real 390 px frame, social cards 1200×630, 1080×1080, 1080×1350) | L |
@@ -172,8 +172,8 @@ Every slice and task of the project, in order. Status is never written here; it 
 Titles stay at 120 characters or less (Mainframe reads the table). Details of the shortened rows:
 
 - **4b:** a Dark/Light toggle; orange only in the rail; plates and the live preview unchanged.
-- **5b2:** ContrastTable as the Color readout in the side panel, the pass count under each plate, the "in use" / "not used yet" preview caption, the 390 top-bar rail (it also closes the ≤760 gap for one-stop labs), and the 5b wording differences.
-- **5c:** the Fix goes through `colorOverrides`; shades 50–950 shown on screen; the `Candidate` shape and `labInput`; `accent / surface` joins the export's contrast check.
+- **5b2:** the "in use" / "not used yet" preview caption; the 390 header (`Stencil · name`, `Stop n of 12 · stop`); at ≤760px every lab with the current one expanded to its stops (user, 2026-10-23: all 7 labs, like the rail, without orange); the spec's wording. The contrast readout and pass count moved to 5c (user, 2026-10-23).
+- **5c:** ContrastTable as the Color readout in the side panel and `n of m pass` under each plate (moved from 5b2); the Fix goes through `colorOverrides`; shades 50–950 shown on screen; the `Candidate` shape and `labInput`; `accent / surface` joins the export's contrast check.
 
 ## Plan (one commit per step; no building until the user says go)
 

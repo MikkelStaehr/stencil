@@ -366,7 +366,8 @@ test("44px: rows, Download buttons, summaries, Open buttons and the bar button; 
     const r = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement;
       const barEl = document.querySelector("main [data-primary-action]")!.parentElement!;
-      if (barEl.contains(el) || !el.closest("main")) return null;
+      // The ≤760px lab overview (5b2) comes after the step, below the bar's container, so the bar can't cover it.
+      if (barEl.contains(el) || !el.closest("main") || el.closest('nav[aria-label="All labs"]')) return null;
       const outline = getComputedStyle(el).outlineStyle;
       return { name: el.textContent?.trim().slice(0, 30), bottom: el.getBoundingClientRect().bottom, barTop: barEl.getBoundingClientRect().top, outline };
     });

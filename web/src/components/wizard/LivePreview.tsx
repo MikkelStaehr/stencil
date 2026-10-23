@@ -47,8 +47,9 @@ export function PreviewPlate({ visual, candidate, productName }: { visual: Visua
 /** The preview column, in every step: the selected-but-not-chosen variant on top of every decision made so far. */
 export function LivePreview({ visual, productName }: { visual: Visual; productName: string | null }) {
   const candidate = usePreviewCandidate();
+  // A candidate is named and says whether the project already uses it (design/specs/lab-shell.md §3, the 5a decision).
   const what = candidate
-    ? valueLabel(withCandidate(visual, candidate), candidate.key)
+    ? `${valueLabel(withCandidate(visual, candidate), candidate.key)}, ${visual[candidate.key] === candidate.value ? "in use" : "not used yet"}`
     : SUB_KEYS.some((k) => isDecided(visual, k))
       ? "Your choices"
       : "Neutrals";

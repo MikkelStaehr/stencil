@@ -72,7 +72,7 @@ test("AC10: Harbour / Clinic booking / Mobile / None survive a reload in the fie
   await page.goto("/?step=profile.identity");
   await expect(page.getByLabel("Project name", { exact: true })).toHaveValue("Harbour");
   await expect(page.getByLabel("Product type", { exact: true })).toHaveValue("Clinic booking");
-  const nav = isMobile() ? page.getByRole("navigation", { name: "Profile stops" }) : page.locator("aside");
+  const nav = isMobile() ? page.getByRole("navigation", { name: "All labs" }) : page.locator("aside");
   await expect(nav).toContainText("Harbour");
   await expect(nav).toContainText("Mobile");
   await expect(nav).toContainText("None");

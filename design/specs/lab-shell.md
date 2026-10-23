@@ -50,7 +50,7 @@ Every other h1 and lede stays as it is today. Question-style h1s ("Pick Harbour'
 ## 4. States
 - **Loading:** the rail renders. The work surface shows today's "Opening your project…" with no eyebrow.
 - **Empty** (`?fixture=empty`): opens on stop 1. Profile is expanded, and its stops read `open` except Component library. Export reads `{n} open`. The preview caption reads "Neutrals".
-- **Stale** (`?fixture=stale`, `snapshot-differs`): `SnapshotNotice`, unchanged, above the eyebrow.
+- **Stale** (`?fixture=stale`): an autosave a week old that was never downloaded; only the export step reads `savedAt`/`downloadedAt`, so nothing shows on other stops. **Snapshot differs** (`?fixture=snapshot-differs`): `SnapshotNotice`, unchanged, above the eyebrow. (Corrected in 5b2; design-lead's note in the 5b review.)
 - **Error** (`?fixture=invalid-many`): the file-errors section, unchanged, above the eyebrow. The rail still shows the unreplaced project. "Save failed" and `OpenedNotice` are unchanged.
 
 ## Files the build touches
