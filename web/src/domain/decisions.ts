@@ -48,7 +48,7 @@ export const VISUAL_SUBDECISIONS = [
   { key: "fontPair", label: "Font pair" },
   { key: "spacingBase", label: "Spacing" },
   { key: "radius", label: "Radius" },
-  { key: "paletteVariant", label: "Brand colour → palette" },
+  { key: "paletteVariant", label: "Palette" },
   { key: "density", label: "Density" },
 ] as const;
 export type VisualKey = (typeof VISUAL_SUBDECISIONS)[number]["key"];
@@ -161,6 +161,12 @@ function isLabId(id: string): id is LabId {
   return LABS.some((l) => l.id === id);
 }
 
+/** Where a lab opens: its first open stop, or its first stop when every one is decided. */
+export function entryStopOfLab(p: ProjectFile, lab: LabId): StopId {
+  const stops = stopsOfLab(lab);
+  return (stops.find((s) => !isStopDecided(p, s.id)) ?? stops[0]).id;
+}
+
 /**
  * Where a link opens: ?step=<stop id> wins (the aliases "visual.palette" and "visual.spacing" stay accepted), else
  * ?lab=<lab id> opens that lab's first open stop (its first stop when all are decided). An unknown value is
@@ -169,14 +175,13 @@ function isLabId(id: string): id is LabId {
 export function stopFromLink(p: ProjectFile, step: string | null, lab: string | null): { stop: StopId | null; warning: string | null } {
   if (step !== null) {
     const id = step === "visual.palette" ? "visual.paletteVariant" : step === "visual.spacing" ? "visual.spacingBase" : step;
-    if (isStopId(id)) return { stop: id, warning: null };
-    return { stop: null, warning: `Unknown ?step=${step}; opening the first open stop instead.` };
+    // ?step= wins, but an unknown ?lab= beside it is still reported.
+    const labWarning = lab !== null && !isLabId(lab) ? `Unknown ?lab=${lab} (ignored: ?step= wins).` : null;
+    if (isStopId(id)) return { stop: id, warning: labWarning };
+    return { stop: null, warning: [`Unknown ?step=${step}; opening the first open stop instead.`, labWarning].filter(Boolean).join(" ") };
   }
   if (lab !== null) {
-    if (isLabId(lab)) {
-      const stops = stopsOfLab(lab);
-      return { stop: (stops.find((s) => !isStopDecided(p, s.id)) ?? stops[0]).id, warning: null };
-    }
+    if (isLabId(lab)) return { stop: entryStopOfLab(p, lab), warning: null };
     return { stop: null, warning: `Unknown ?lab=${lab}; opening the first open stop instead.` };
   }
   return { stop: null, warning: null };

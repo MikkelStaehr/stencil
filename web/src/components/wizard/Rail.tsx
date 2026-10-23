@@ -1,6 +1,6 @@
 "use client";
 import type { ProjectFile } from "@/contracts/project";
-import { isStopDecided, labOfStop, LABS, openDecisions, stopsOfLab, type LabId, type StopId, type VisualKey } from "@/domain/decisions";
+import { entryStopOfLab, isStopDecided, labOfStop, LABS, openDecisions, stopsOfLab, type LabId, type StopId, type VisualKey } from "@/domain/decisions";
 import { OpenProjectButton } from "./OpenProjectButton";
 import { ShortcutLegend } from "./ShortcutLegend";
 import { ThemeToggle } from "./ThemeToggle";
@@ -43,7 +43,7 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
                 {/* The lab name and summary open the lab at its first open stop: one 44px target. */}
                 <button
                   type="button"
-                  onClick={() => onPick(entryStop(project, lab.id))}
+                  onClick={() => onPick(entryStopOfLab(project, lab.id))}
                   className="-mx-1 flex min-h-11 flex-col justify-center rounded-sm px-1 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus"
                 >
                   <span className="font-medium">{lab.title}</span>
@@ -72,15 +72,10 @@ export function Rail({ project, stop, onPick }: { project: ProjectFile; stop: St
   );
 }
 
-/** A lab's first open stop, or its first stop when every one is decided. */
-export function entryStop(p: ProjectFile, lab: LabId): StopId {
-  const stops = stopsOfLab(lab);
-  return (stops.find((s) => !isStopDecided(p, s.id)) ?? stops[0]).id;
-}
-
-/** "2 of 3 decided" for labs with decisions; the sample screen and the files say what they are instead. */
+/** "2 of 3 decided" for labs with decisions; Laws says how many rules once decided; the sample screen and the files say what they are. */
 function labSummary(p: ProjectFile, lab: LabId, openCount: number): string {
   if (lab === "preview") return "Nothing to decide";
+  if (lab === "laws") return lawsValue(p) ?? "0 of 1 decided";
   if (lab === "export") return openCount === 0 ? "Ready" : `${openCount} open`;
   const stops = stopsOfLab(lab);
   return `${stops.filter((s) => isStopDecided(p, s.id)).length} of ${stops.length} decided`;

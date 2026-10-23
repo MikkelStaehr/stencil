@@ -168,6 +168,8 @@ test("links: ?step= wins, aliases still work, ?lab= opens the lab's first open s
   expect(stopFromLink(empty, "visual.nope", null).stop).toBeNull();
   expect(stopFromLink(empty, "visual.nope", null).warning).toContain("Unknown ?step=visual.nope");
   expect(stopFromLink(empty, null, "sound").warning).toContain("Unknown ?lab=sound");
+  // ?step= wins, but an unknown ?lab= beside it is still reported.
+  expect(stopFromLink(empty, "visual.palette", "sound")).toEqual({ stop: "visual.paletteVariant", warning: "Unknown ?lab=sound (ignored: ?step= wins)." });
   expect(stopFromLink(empty, null, null)).toEqual({ stop: null, warning: null });
 });
 

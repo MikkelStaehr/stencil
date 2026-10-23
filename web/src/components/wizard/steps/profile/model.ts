@@ -1,6 +1,6 @@
-// View helpers for step 1: how profile values read in the rail. Which stops are open is owned by domain/decisions.ts.
+// View helpers for the Profile lab: how profile values read in the rail. Which stops are open is owned by domain/decisions.ts.
 import type { ComponentLibrary, Platform, ProjectFile } from "@/contracts/project";
-import { DECISIONS, isStopDecided } from "@/domain/decisions";
+import { isStopDecided } from "@/domain/decisions";
 import type { StopRow } from "@/components/wizard/SubDecisionList";
 
 export type ProfileStop = "profile.identity" | "profile.platform" | "profile.library";
@@ -15,9 +15,4 @@ export function profileRows(p: ProjectFile): StopRow<ProfileStop>[] {
     { id: "profile.platform", label: "Platform", value: platform === null ? null : PLATFORM_LABELS[platform] },
     { id: "profile.library", label: "Component library", value: LIBRARY_LABELS[componentLibrary] },
   ];
-}
-
-/** The profile decisions that are set (componentLibrary is never open, so it is not one of them). */
-export function profileDecidedCount(p: ProjectFile): number {
-  return DECISIONS.filter((d) => d.path.startsWith("profile.") && d.get(p) !== null).length;
 }

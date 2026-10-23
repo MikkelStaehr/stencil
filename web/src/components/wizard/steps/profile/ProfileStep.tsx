@@ -10,20 +10,17 @@ import { fontPairLabel } from "../visual/model";
 import { IdentityStop } from "./identity";
 import { LIBRARY_LABELS, PLATFORM_LABELS, type ProfileStop } from "./model";
 
-const META: Record<ProfileStop, { index: number; title: string; lead: (whose: string) => string }> = {
+const META: Record<ProfileStop, { title: string; lead: (whose: string) => string }> = {
   "profile.identity": {
-    index: 1,
     title: "Name and product type",
     lead: () => "Name the project and say what kind of product it is. Both go into DESIGN.md; you can change them later.",
   },
   "profile.platform": {
-    index: 2,
     title: "Platform",
     lead: (whose) =>
       `Which screens do ${whose} designs target first? This sets the platform line in DESIGN.md and the width the team designs at. It changes no tokens; you can change it later.`,
   },
   "profile.library": {
-    index: 3,
     title: "Component library",
     lead: (whose) => `How should DESIGN.md name ${whose} CSS variables? The colours and tokens.json stay the same; you can change this later.`,
   },

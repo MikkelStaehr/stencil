@@ -126,7 +126,7 @@ test("preview: J from Laws and ?step=preview land there, and each decision row r
     [/^Change Font pair/, "Font pair"],
     [/^Change Spacing/, "Spacing"],
     [/^Change Radius/, "Radius"],
-    [/^Change Brand colour/, "Brand colour"],
+    [/^Change Palette/, "Palette"],
     [/^Change Density/, "Density"],
   ];
   for (const [row, title] of rows) {

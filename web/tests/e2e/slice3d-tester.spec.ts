@@ -95,7 +95,7 @@ const STOP_TITLE: Record<string, RegExp> = {
   "Spacing base": /^Spacing\s*$/,
   Radius: /^Radius\s*$/,
   "Brand colour": /^Brand colour\s*$/,
-  Palette: /^Brand colour\s*(to )?palette\s*$/,
+  Palette: /^Palette\s*$/,
   Density: /^Density\s*$/,
 };
 

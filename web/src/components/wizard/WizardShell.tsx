@@ -125,7 +125,7 @@ export function WizardShell() {
           Path · stop {at.n} of {at.total} · {lab.title}
         </p>
         {lab.id === "profile" && <ProfileStep stop={stop as ProfileStop} project={project} onMove={setPicked} />}
-        {stop === "visual.brandHex" && <BrandStop visual={visual} productName={productName} onMove={setPicked} />}
+        {stop === "visual.brandHex" && <BrandStop key={fileVersion} visual={visual} productName={productName} onMove={setPicked} />}
         {isPlateStop && (
           <VisualStep key={fileVersion} sub={stop.slice("visual.".length) as VisualKey} visual={visual} productName={productName} onMove={setPicked} />
         )}

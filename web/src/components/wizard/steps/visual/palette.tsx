@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Visual } from "@/contracts/project";
 import { nextStop, type StopId } from "@/domain/decisions";
 import { palettes, PALETTE_LABELS } from "@/domain/color/palette";
@@ -12,14 +12,23 @@ import { ContrastTable } from "@/components/wizard/ContrastTable";
 import { ownsKey } from "@/components/wizard/use-shortcuts";
 import { fontPairLabel, type DecisionProps } from "./model";
 
-/** Brand colour field: validated on blur (or Enter); on error the typed text stays and the message sits next to it. */
-function BrandField({ brandHex, onEntered }: { brandHex: string | null; onEntered: () => void }) {
-  const [draft, setDraft] = useState(brandHex ?? "");
+/**
+ * The Color lab's first stop: the brand colour every palette is built from. It owns the draft, so moving on always
+ * records it first. Blur records a valid colour; Continue (the button, Enter in the field or Enter on the page)
+ * records it and goes on, or, when the field is empty or invalid, shows why, focuses the field and stays
+ * (design/specs/lab-shell.md §3, like identity's Continue to platform).
+ */
+export function BrandStop({ visual, productName, onMove }: { visual: Visual; productName: string | null; onMove: (id: StopId) => void }) {
+  const brand = visual.brandHex;
+  const whose = productName ? `${productName}’s` : "your project’s";
+  const [draft, setDraft] = useState(brand ?? "");
   const [error, setError] = useState<string | null>(null);
-  /** True when the field holds a valid colour afterwards (recorded through the store if it changed). */
-  const commit = (): boolean => {
-    if (draft.trim() === "" && brandHex === null) {
-      setError(null);
+  const field = useRef<HTMLInputElement>(null);
+
+  /** True when the draft is a valid colour, recorded through the store if it changed. On blur an empty field is no error. */
+  const commit = (moving: boolean): boolean => {
+    if (draft.trim() === "") {
+      setError(moving ? "Enter the brand colour as a hex value, for example #0F766E." : null);
       return false;
     }
     const r = parseHexInput(draft);
@@ -29,59 +38,32 @@ function BrandField({ brandHex, onEntered }: { brandHex: string | null; onEntere
     }
     setError(null);
     setDraft(r.value);
-    if (r.value !== brandHex) projectStore().setVisual("brandHex", r.value);
+    if (r.value !== brand) projectStore().setVisual("brandHex", r.value);
     return true;
   };
-  return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor="brand-hex" className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
-        Brand colour
-      </label>
-      <div className="flex min-h-11 w-full items-center gap-2 rounded-sm border border-dw-ctl bg-dw-surface px-2.5 min-[761px]:w-[200px]">
-        <span aria-hidden="true" className="size-4 flex-none border border-dw-ctl" style={brandHex ? { background: brandHex } : undefined} />
-        <input
-          id="brand-hex"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && commit()) onEntered();
-          }}
-          placeholder="#0F766E"
-          autoComplete="off"
-          spellCheck={false}
-          aria-invalid={error !== null}
-          aria-describedby={error ? "brand-hex-error" : undefined}
-          className="h-11 w-full bg-transparent font-mono text-body font-medium outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus placeholder:text-dw-text-muted"
-        />
-      </div>
-      {error && (
-        <p id="brand-hex-error" role="alert" className="max-w-[40ch] text-small">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/**
- * The Color lab's first stop: the brand colour every palette is built from. Enter in the field records it and goes on;
- * elsewhere Enter (or the primary) goes on to the palette.
- */
-export function BrandStop({ visual, productName, onMove }: { visual: Visual; productName: string | null; onMove: (id: StopId) => void }) {
-  const brand = visual.brandHex;
-  const whose = productName ? `${productName}’s` : "your project’s";
   const goOn = () => {
+    if (!commit(true)) {
+      field.current?.focus();
+      return;
+    }
     const next = nextStop("visual.brandHex");
     if (next) onMove(next);
   };
+  const goOnRef = useRef(goOn);
+  useEffect(() => {
+    goOnRef.current = goOn;
+  });
+  // Enter anywhere but a button, link or field continues (the field and the button handle their own Enter).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey && !e.altKey && !ownsKey(e.target, e.key)) goOn();
+      if (e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || ownsKey(e.target, e.key)) return;
+      e.preventDefault();
+      goOnRef.current();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  });
+  }, []);
+
   return (
     <>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
@@ -90,13 +72,47 @@ export function BrandStop({ visual, productName, onMove }: { visual: Visual; pro
       <p className="mt-1 max-w-[60ch] text-dw-text-muted">
         The colour {whose} palettes are built from. The next stop offers three palettes made from it; you can change it later.
       </p>
-      <div className="mt-4">
-        <BrandField key={brand ?? "none"} brandHex={brand} onEntered={goOn} />
+      <div className="mt-4 flex flex-col gap-1">
+        <label htmlFor="brand-hex" className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
+          Brand colour
+        </label>
+        <div className="flex min-h-11 w-full items-center gap-2 rounded-sm border border-dw-ctl bg-dw-surface px-2.5 min-[761px]:w-[200px]">
+          <span aria-hidden="true" className="size-4 flex-none border border-dw-ctl" style={brand ? { background: brand } : undefined} />
+          <input
+            ref={field}
+            id="brand-hex"
+            value={draft}
+            onChange={(e) => {
+              setDraft(e.target.value);
+              setError(null);
+            }}
+            onBlur={() => commit(false)}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" || e.repeat) return;
+              e.preventDefault();
+              goOn();
+            }}
+            placeholder="#0F766E"
+            autoComplete="off"
+            spellCheck={false}
+            aria-invalid={error !== null}
+            aria-describedby={error ? "brand-hex-error" : undefined}
+            className="h-11 w-full bg-transparent font-mono text-body font-medium outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dw-focus placeholder:text-dw-text-muted"
+          />
+        </div>
+        {error && (
+          <p id="brand-hex-error" role="alert" className="max-w-[40ch] text-small">
+            {error}
+          </p>
+        )}
       </div>
       <div className="mt-6 border-t border-dw-line pt-4">
         <button
           type="button"
           data-primary-action=""
+          // Keep focus in the field on mousedown: a blur would record the draft and show or hide the error, moving this
+          // button between mousedown and mouseup so the click is lost. goOn records the draft itself.
+          onMouseDown={(e) => e.preventDefault()}
           onClick={goOn}
           className="inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground min-[761px]:w-auto"
         >
