@@ -1,8 +1,12 @@
-// Owner of the wizard's ordered steps, the list of decisions, which are open, and the export gate
+// Owner of the labs and the path's ordered stops, the list of decisions, which are open, and the export gate
 // (docs/ARCHITECTURE.md §4). The parser and the exporters both ask this module.
 import type { ProjectFile, Visual } from "@/contracts/project";
 
-/** Every decision (`null` = open; notes and componentLibrary are not decisions), in wizard order, with the stop that makes or changes it (the brand colour is decided on the palette stop). */
+/**
+ * Every decision (`null` = open; notes and componentLibrary are not decisions) with the stop that makes or changes it.
+ * This order is the export gate's "Still open" order and stays fixed (exports and messages are byte-stable); the UI
+ * lists open decisions in path order instead (openDecisionStops).
+ */
 export const DECISIONS: readonly { path: string; label: string; stop: StopId; get: (p: ProjectFile) => unknown }[] = [
   { path: "profile.name", label: "Project name", stop: "profile.identity", get: (p) => p.profile?.name },
   { path: "profile.productType", label: "Product type", stop: "profile.identity", get: (p) => p.profile?.productType },
@@ -11,17 +15,19 @@ export const DECISIONS: readonly { path: string; label: string; stop: StopId; ge
   { path: "visual.fontPair", label: "Font pair", stop: "visual.fontPair", get: (p) => p.visual?.fontPair },
   { path: "visual.spacingBase", label: "Spacing base", stop: "visual.spacingBase", get: (p) => p.visual?.spacingBase },
   { path: "visual.radius", label: "Radius", stop: "visual.radius", get: (p) => p.visual?.radius },
-  { path: "visual.brandHex", label: "Brand colour", stop: "visual.paletteVariant", get: (p) => p.visual?.brandHex },
+  { path: "visual.brandHex", label: "Brand colour", stop: "visual.brandHex", get: (p) => p.visual?.brandHex },
   { path: "visual.paletteVariant", label: "Palette", stop: "visual.paletteVariant", get: (p) => p.visual?.paletteVariant },
   { path: "visual.density", label: "Density", stop: "visual.density", get: (p) => p.visual?.density },
 ];
 
-/** The open decisions with the stop that reopens each, in wizard order (the export step's blocked list). */
+/** The open decisions with the stop that reopens each, in path order (the export step's blocked list). */
 export function openDecisionStops(p: ProjectFile): { label: string; stop: StopId }[] {
-  return DECISIONS.filter((d) => d.get(p) === null).map((d) => ({ label: d.label, stop: d.stop }));
+  return DECISIONS.filter((d) => d.get(p) === null)
+    .map((d) => ({ label: d.label, stop: d.stop }))
+    .sort((a, b) => STOP_IDS.indexOf(a.stop) - STOP_IDS.indexOf(b.stop));
 }
 
-/** Labels of the decisions that are still open (null), in wizard order. */
+/** Labels of the decisions that are still open (null), in DECISIONS order (the export gate's message). */
 export function openDecisions(p: ProjectFile): string[] {
   return DECISIONS.filter((d) => d.get(p) === null).map((d) => d.label);
 }
@@ -37,7 +43,7 @@ export function assertExportable(p: ProjectFile): asserts p is ProjectFile & {
   if (p.resolved === null) throw new Error("Export is blocked: the design snapshot has not been resolved yet.");
 }
 
-/** The visual-system sub-decisions in wizard order (step 3), and the variants each shows side by side. */
+/** The visual sub-decisions shown as 2–3 plates; each is a stop `visual.<key>` (the brand colour is its own stop, a field). */
 export const VISUAL_SUBDECISIONS = [
   { key: "fontPair", label: "Font pair" },
   { key: "spacingBase", label: "Spacing" },
@@ -95,53 +101,85 @@ export function isDecided(v: Visual, key: VisualKey): boolean {
   return key === "paletteVariant" ? v.paletteVariant !== null && v.brandHex !== null : v[key] !== null;
 }
 
-export function firstOpen(v: Visual): VisualKey | null {
-  return SUB_KEYS.find((k) => !isDecided(v, k)) ?? null;
-}
-
-/** The next open sub-decision after `from`, wrapping around; null when every other one is decided. */
-export function nextOpenAfter(v: Visual, from: VisualKey): VisualKey | null {
-  const i = SUB_KEYS.indexOf(from);
-  for (let n = 1; n < SUB_KEYS.length; n++) {
-    const k = SUB_KEYS[(i + n) % SUB_KEYS.length];
-    if (!isDecided(v, k)) return k;
-  }
-  return null;
-}
-
-/** E: the nearest decided sub-decision before `from`, else the last decided one. */
-export function lastDecidedBefore(v: Visual, from: VisualKey): VisualKey | null {
-  const i = SUB_KEYS.indexOf(from);
-  for (let n = i - 1; n >= 0; n--) if (isDecided(v, SUB_KEYS[n])) return SUB_KEYS[n];
-  for (let n = SUB_KEYS.length - 1; n > i; n--) if (isDecided(v, SUB_KEYS[n])) return SUB_KEYS[n];
-  return null;
-}
+/** The labs, in path order (docs/PLAN.md "Labs programme", design/labs/lab-pattern.md). */
+export const LABS = [
+  { id: "profile", number: 1, title: "Profile" },
+  { id: "color", number: 2, title: "Color" },
+  { id: "type", number: 3, title: "Type" },
+  { id: "space", number: 4, title: "Space & shape" },
+  { id: "laws", number: 5, title: "Laws" },
+  { id: "preview", number: 6, title: "Preview" },
+  { id: "export", number: 7, title: "Export" },
+] as const;
+export type LabId = (typeof LABS)[number]["id"];
+export type Lab = (typeof LABS)[number];
 
 /**
- * Every stop the user moves through with J/K/E, across steps, in wizard order (design/specs/step-1-profile.md).
- * Step 2 is one stop until the laws picker exists. componentLibrary is never null, so it is always decided.
+ * The path: every stop the user walks with J/K/E, lab by lab (12 stops). Ids stay stable (?step= links, fixtures);
+ * the lab is a field, never parsed from the id. componentLibrary is never null, so its stop is always decided.
  */
 export const STOPS = [
-  { id: "profile.identity", step: "profile", label: "Name & type" },
-  { id: "profile.platform", step: "profile", label: "Platform" },
-  { id: "profile.library", step: "profile", label: "Component library" },
-  { id: "principles", step: "principles", label: "Laws" },
-  ...VISUAL_SUBDECISIONS.map((s) => ({ id: `visual.${s.key}` as const, step: "visual" as const, label: s.label })),
-  // Step 4 shows every decision on one sample screen; there is nothing to decide there.
-  { id: "preview", step: "preview", label: "Live preview" },
-  // Step 5: the files. Nothing to decide; its blocked state lists the open decisions instead.
-  { id: "export", step: "export", label: "Files" },
+  { id: "profile.identity", lab: "profile", label: "Name & type" },
+  { id: "profile.platform", lab: "profile", label: "Platform" },
+  { id: "profile.library", lab: "profile", label: "Component library" },
+  { id: "visual.brandHex", lab: "color", label: "Brand colour" },
+  { id: "visual.paletteVariant", lab: "color", label: "Palette" },
+  { id: "visual.fontPair", lab: "type", label: "Font pair" },
+  { id: "visual.spacingBase", lab: "space", label: "Spacing" },
+  { id: "visual.radius", lab: "space", label: "Radius" },
+  { id: "visual.density", lab: "space", label: "Density" },
+  { id: "principles", lab: "laws", label: "Laws" },
+  // Shows every decision on one sample screen; there is nothing to decide there.
+  { id: "preview", lab: "preview", label: "Sample screen" },
+  // The files. Nothing to decide; its blocked state lists the open decisions instead.
+  { id: "export", lab: "export", label: "Files" },
 ] as const;
 export type StopId = (typeof STOPS)[number]["id"];
 const STOP_IDS: readonly StopId[] = STOPS.map((s) => s.id);
 
-/** The step a stop belongs to (from STOPS, not from the id string). */
-export function stepOfStop(id: StopId): StepId {
-  return (STOPS.find((s) => s.id === id)?.step ?? "profile") as StepId;
+/** The lab a stop belongs to (from STOPS, not from the id string). */
+export function labOfStop(id: StopId): Lab {
+  const lab = STOPS.find((s) => s.id === id)?.lab ?? "profile";
+  return LABS.find((l) => l.id === lab) ?? LABS[0];
+}
+
+/** A lab's stops, in path order. */
+export function stopsOfLab(lab: LabId): readonly (typeof STOPS)[number][] {
+  return STOPS.filter((s) => s.lab === lab);
+}
+
+/** Where a stop sits on the path: "stop n of 12". */
+export function pathPosition(id: StopId): { n: number; total: number } {
+  return { n: STOP_IDS.indexOf(id) + 1, total: STOP_IDS.length };
 }
 
 export function isStopId(id: string): id is StopId {
   return (STOP_IDS as readonly string[]).includes(id);
+}
+
+function isLabId(id: string): id is LabId {
+  return LABS.some((l) => l.id === id);
+}
+
+/**
+ * Where a link opens: ?step=<stop id> wins (the aliases "visual.palette" and "visual.spacing" stay accepted), else
+ * ?lab=<lab id> opens that lab's first open stop (its first stop when all are decided). An unknown value is
+ * reported, never guessed: stop is then null.
+ */
+export function stopFromLink(p: ProjectFile, step: string | null, lab: string | null): { stop: StopId | null; warning: string | null } {
+  if (step !== null) {
+    const id = step === "visual.palette" ? "visual.paletteVariant" : step === "visual.spacing" ? "visual.spacingBase" : step;
+    if (isStopId(id)) return { stop: id, warning: null };
+    return { stop: null, warning: `Unknown ?step=${step}; opening the first open stop instead.` };
+  }
+  if (lab !== null) {
+    if (isLabId(lab)) {
+      const stops = stopsOfLab(lab);
+      return { stop: (stops.find((s) => !isStopDecided(p, s.id)) ?? stops[0]).id, warning: null };
+    }
+    return { stop: null, warning: `Unknown ?lab=${lab}; opening the first open stop instead.` };
+  }
+  return { stop: null, warning: null };
 }
 
 export function isStopDecided(p: ProjectFile, id: StopId): boolean {
@@ -156,12 +194,14 @@ export function isStopDecided(p: ProjectFile, id: StopId): boolean {
       return true;
     case "principles":
       return p.principles !== null;
+    case "visual.brandHex":
+      return p.visual.brandHex !== null;
     default:
       return isDecided(p.visual, id.slice("visual.".length) as VisualKey);
   }
 }
 
-/** The stop after `id` in order (choosing moves on in order, so every stop is seen once); null at the end. */
+/** The stop after `id` on the path (choosing moves on in order, so every stop is seen once); null at the end. */
 export function nextStop(id: StopId): StopId | null {
   return STOP_IDS[STOP_IDS.indexOf(id) + 1] ?? null;
 }
@@ -171,7 +211,7 @@ export function prevStop(id: StopId): StopId | null {
   return i > 0 ? STOP_IDS[i - 1] : null;
 }
 
-/** E across steps: the nearest decided stop before `id`, else the last decided one after it. */
+/** E: the nearest decided stop before `id`, else the last decided one after it. */
 export function lastDecidedStopBefore(p: ProjectFile, id: StopId): StopId | null {
   const i = STOP_IDS.indexOf(id);
   for (let n = i - 1; n >= 0; n--) if (isStopDecided(p, STOP_IDS[n])) return STOP_IDS[n];
@@ -182,20 +222,3 @@ export function lastDecidedStopBefore(p: ProjectFile, id: StopId): StopId | null
 export function firstOpenStop(p: ProjectFile): StopId | null {
   return STOP_IDS.find((id) => !isStopDecided(p, id)) ?? null;
 }
-
-export type StepId = "profile" | "principles" | "visual" | "preview" | "export";
-
-export interface Step {
-  readonly id: StepId;
-  readonly number: number;
-  readonly title: string;
-  readonly summary: string;
-}
-
-export const STEPS: readonly Step[] = [
-  { id: "profile", number: 1, title: "Project profile", summary: "Name, product type, platform" },
-  { id: "principles", number: 2, title: "UX principles", summary: "Laws that become checkable rules" },
-  { id: "visual", number: 3, title: "Visual system", summary: "Fonts, spacing, radius, palette, density" },
-  { id: "preview", number: 4, title: "Live preview", summary: "Every decision on one sample screen" },
-  { id: "export", number: 5, title: "Export", summary: "DESIGN.md · tokens.json · ux-rules.yaml" },
-];

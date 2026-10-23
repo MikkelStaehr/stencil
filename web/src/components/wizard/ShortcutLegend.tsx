@@ -3,20 +3,21 @@
 const SHORTCUTS: readonly { keys: readonly string[]; label: string }[] = [
   { keys: ["1", "2", "3"], label: "Pick variant" },
   { keys: ["Enter"], label: "Choose variant" },
-  { keys: ["J", "K"], label: "Next / previous decision" },
+  { keys: ["J", "K"], label: "Next / previous stop" },
   { keys: ["E"], label: "Reopen last decision" },
 ];
 
 const LAWS_KEY = { keys: ["Space"], label: "Add or remove law" } as const;
 
 /**
- * On step 2, Space replaces "1 2 3 Pick variant" (laws are not variants) and Enter continues. Step 4 has nothing to pick.
- * On step 5, Enter is the primary: "Download all" (ready) or "Go to open decision" (blocked).
+ * On the Laws stop, Space replaces "1 2 3 Pick variant" (laws are not variants) and Enter continues. The sample screen
+ * has nothing to pick. Where Enter is a stop's own primary (Brand colour: "Continue to palette"; Files: "Download all"
+ * or "Go to open decision"), `enter` names it and 1 2 3 is left out.
  */
-export function ShortcutLegend({ className = "", laws = false, view = false, exportEnter }: { className?: string; laws?: boolean; view?: boolean; exportEnter?: string }) {
+export function ShortcutLegend({ className = "", laws = false, view = false, enter }: { className?: string; laws?: boolean; view?: boolean; enter?: string }) {
   const list =
-    exportEnter !== undefined
-      ? [{ keys: ["Enter"], label: exportEnter }, ...SHORTCUTS.slice(2)]
+    enter !== undefined
+      ? [{ keys: ["Enter"], label: enter }, ...SHORTCUTS.slice(2)]
       : view
         ? SHORTCUTS.slice(2)
         : laws

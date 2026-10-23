@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ProjectFile } from "@/contracts/project";
-import { openDecisionStops, stepOfStop, STEPS, type StopId } from "@/domain/decisions";
+import { labOfStop, openDecisionStops, type StopId } from "@/domain/decisions";
 import { countLine } from "@/domain/rules";
 import { fileStatus, projectStore, useProject, type FileStatus } from "@/data/project/store";
 import { downloadMany, downloadText } from "@/data/project/file-io";
@@ -156,7 +156,6 @@ export function ExportStep({ project, onMove }: { project: ProjectFile; onMove: 
 
   return (
     <div className="max-w-[720px]">
-      <p className={LABEL}>Step 05 · Export</p>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
         Export
       </h1>
@@ -187,7 +186,7 @@ export function ExportStep({ project, onMove }: { project: ProjectFile; onMove: 
                     {d.label}
                   </span>
                   <span className="flex items-center gap-2">
-                    <span className="font-mono text-label text-dw-text-muted">Step {STEPS.find((s) => s.id === stepOfStop(d.stop))?.number}</span>
+                    <span className="font-mono text-label text-dw-text-muted">{labOfStop(d.stop).title}</span>
                     <Chevron />
                   </span>
                 </button>

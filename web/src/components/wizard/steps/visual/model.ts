@@ -4,7 +4,7 @@ import type { Visual } from "@/contracts/project";
 import { FONT_BY_ID } from "@/content/fonts";
 import { FONT_PAIR_BY_ID } from "@/content/font-pairs";
 import { PALETTE_LABELS } from "@/domain/color/palette";
-import { isDecided, type VisualKey } from "@/domain/decisions";
+import { isDecided, type StopId, type VisualKey } from "@/domain/decisions";
 
 /** "Sora + Inter", or "Inter" for a single-family pair. Unknown ids are shown as-is, never hidden. */
 export function fontPairLabel(id: string): string {
@@ -36,11 +36,12 @@ export function valueLabel(v: Visual, key: VisualKey): string | null {
   }
 }
 
-/** Props every sub-decision view takes. `onChoose` records the value through the store, then moves on. */
+/** Props every sub-decision view takes. `onChoose` records the value through the store, then moves on; `onMove` opens another stop. */
 export interface DecisionProps {
   visual: Visual;
   productName: string | null;
   onChoose: <K extends VisualKey>(key: K, value: NonNullable<Visual[K]>) => void;
+  onMove: (id: StopId) => void;
 }
 
 /** The footer line's word for an open decision. */

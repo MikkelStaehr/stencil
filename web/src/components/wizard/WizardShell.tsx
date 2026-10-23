@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { firstOpenStop, isStopId, lastDecidedStopBefore, nextStop, prevStop, stepOfStop, STEPS, SUB_KEYS, type StopId, type VisualKey } from "@/domain/decisions";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { firstOpenStop, labOfStop, lastDecidedStopBefore, nextStop, openDecisions, pathPosition, prevStop, stopFromLink, stopsOfLab, type StopId, type VisualKey } from "@/domain/decisions";
 import { projectStore, useProject } from "@/data/project/store";
 import { ownsKey } from "./use-shortcuts";
-import { Rail } from "./Rail";
+import { labRows, Rail } from "./Rail";
+import { StopList } from "./SubDecisionList";
+import { BrandStop } from "./steps/visual/palette";
 import { SnapshotNotice } from "./SnapshotNotice";
 import { VisualStep } from "./steps/visual/VisualStep";
 import { ProfileStep } from "./steps/profile/ProfileStep";
@@ -16,16 +18,6 @@ import { ThemeToggle } from "./ThemeToggle";
 import { LivePreview } from "./LivePreview";
 import type { ProfileStop } from "./steps/profile/model";
 
-/** ?step=<stop id> opens a stop directly; "visual.palette" and "visual.spacing" stay accepted as aliases. */
-function stopFromSearch(search: string): StopId | null {
-  const raw = new URLSearchParams(search).get("step");
-  if (raw === null) return null;
-  const id = raw === "visual.palette" ? "visual.paletteVariant" : raw === "visual.spacing" ? "visual.spacingBase" : raw;
-  if (isStopId(id)) return id;
-  console.warn(`Unknown ?step=${raw}; opening the first open stop instead.`);
-  return null;
-}
-
 const noSubscribe = () => () => {};
 
 /** Display only: the row already shows the path, so drop a leading "<path> " and capitalise. Parser messages are unchanged. */
@@ -34,21 +26,28 @@ function withoutPath(path: string, message: string): string {
   return rest.charAt(0).toUpperCase() + rest.slice(1);
 }
 
-// Layout from DESIGN.md "Space & density": ≥1101px rail 232 | main | preview 340;
-// 761–1100px rail 200 + main with the preview below; ≤760px one column, rail and legend hidden.
+// Layout from DESIGN.md "Space & density": ≥1101px rail 232 | work surface | side panel 340;
+// 761–1100px rail 200 + work surface with the side panel below; ≤760px one column, rail and legend hidden.
 export function WizardShell() {
   const { project, errors, saveFailed, hydrated, fileVersion } = useProject();
   const visual = project.visual;
   const productName = project.profile.name;
   const [picked, setPicked] = useState<StopId | null>(null);
-  /** Until the user moves, the wizard opens on the first open stop (the project may load after first render). */
-  const fromUrl = useSyncExternalStore(noSubscribe, () => stopFromSearch(window.location.search), () => null);
-  // Every decision set: open step 4, the live preview.
-  const stop: StopId = picked ?? fromUrl ?? firstOpenStop(project) ?? "preview";
-  const current = stepOfStop(stop);
-  // Pin the starting stop once, so committing a field never moves the user mid-step.
+  /** Until the user moves, the path opens on ?step=, then ?lab=, then the first open stop (the project may load after first render). */
+  const search = useSyncExternalStore(noSubscribe, () => window.location.search, () => "");
+  const link = useMemo(() => {
+    const q = new URLSearchParams(search);
+    return stopFromLink(project, q.get("step"), q.get("lab"));
+  }, [search, project]);
+  useEffect(() => {
+    if (link.warning) console.warn(link.warning);
+  }, [link.warning]);
+  // Every decision set: open the sample screen.
+  const stop: StopId = picked ?? link.stop ?? firstOpenStop(project) ?? "preview";
+  const lab = labOfStop(stop);
+  const at = pathPosition(stop);
+  // Pin the starting stop once, so committing a field never moves the user mid-stop.
   if (hydrated && picked === null) setPicked(stop);
-  const step = STEPS.find((s) => s.id === current) ?? STEPS[0];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -74,7 +73,7 @@ export function WizardShell() {
     } else document.querySelector<HTMLElement>("main h1")?.focus();
   }, [stop, project.profile, hydrated]);
 
-  const visualSub = (current === "visual" ? stop.slice("visual.".length) : SUB_KEYS[0]) as VisualKey;
+  const isPlateStop = stop.startsWith("visual.") && stop !== "visual.brandHex";
 
   return (
     <div className="min-h-dvh min-[761px]:grid min-[761px]:grid-cols-[200px_minmax(0,1fr)] min-[1101px]:grid-cols-[232px_minmax(0,1fr)_340px]">
@@ -82,7 +81,7 @@ export function WizardShell() {
         <span className="font-mono text-label font-medium tracking-[0.08em] uppercase">Stencil</span>
         <span className="flex items-center gap-3">
           <span className="font-mono text-label text-dw-text-muted">
-            Step {step.number} of {STEPS.length}
+            Stop {at.n} of {at.total}
           </span>
           <ThemeToggle compact />
           {hydrated && <OpenProjectButton label="Open file" buttonClass="px-3" />}
@@ -91,7 +90,7 @@ export function WizardShell() {
       <aside className="hidden bg-dw-rail min-[761px]:block min-[761px]:row-span-2 min-[1101px]:row-span-1">
         <Rail project={project} stop={stop} onPick={setPicked} />
       </aside>
-      <main className={`min-w-0 px-4 pt-5 pb-8 min-[761px]:px-6 ${current === "preview" ? "min-[1101px]:col-span-2" : ""}`}>
+      <main className={`min-w-0 px-4 pt-5 pb-8 min-[761px]:px-6 ${stop === "preview" ? "min-[1101px]:col-span-2" : ""}`}>
         {/* Before hydration the server snapshot is an empty project: show nothing to type into. */}
         {!hydrated ? (
           <p role="status" className="text-dw-text-muted">
@@ -122,18 +121,31 @@ export function WizardShell() {
         )}
         <OpenedNotice />
         <SnapshotNotice />
-        {current === "visual" && (
-          <VisualStep key={fileVersion} sub={visualSub} visual={visual} productName={productName} onMove={(k) => setPicked(`visual.${k}`)} />
+        <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
+          Path · stop {at.n} of {at.total} · {lab.title}
+        </p>
+        {lab.id === "profile" && <ProfileStep stop={stop as ProfileStop} project={project} onMove={setPicked} />}
+        {stop === "visual.brandHex" && <BrandStop visual={visual} productName={productName} onMove={setPicked} />}
+        {isPlateStop && (
+          <VisualStep key={fileVersion} sub={stop.slice("visual.".length) as VisualKey} visual={visual} productName={productName} onMove={setPicked} />
         )}
-        {current === "profile" && <ProfileStep stop={stop as ProfileStop} project={project} onMove={setPicked} />}
-        {current === "principles" && <PrinciplesStep project={project} onMove={setPicked} />}
-        {current === "preview" && <PreviewStep project={project} onMove={setPicked} />}
-        {current === "export" && <ExportStep project={project} onMove={setPicked} />}
+        {stop === "principles" && <PrinciplesStep project={project} onMove={setPicked} />}
+        {stop === "preview" && <PreviewStep project={project} onMove={setPicked} />}
+        {stop === "export" && <ExportStep project={project} onMove={setPicked} />}
+        {/* ≤760px has no rail: the current lab's stops sit under the work surface instead. */}
+        {stopsOfLab(lab.id).length > 1 && (
+          <nav aria-label={`${lab.title} stops`} className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
+            <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">{lab.title} stops</p>
+            <div className="mt-1">
+              <StopList rows={labRows(project, lab.id, openDecisions(project).length)} current={stop} onPick={setPicked} />
+            </div>
+          </nav>
+        )}
           </>
         )}
       </main>
-      {/* Step 4 shows the same screen full size in main, so the column steps aside there. */}
-      {hydrated && current !== "preview" && (
+      {/* The sample screen shows the same screen full size in the work surface, so the side panel steps aside there. */}
+      {hydrated && stop !== "preview" && (
       <section
         aria-labelledby="preview-label"
         className="border-t border-dw-line bg-dw-aside px-4 py-5 min-[761px]:col-start-2 min-[761px]:px-6 min-[1101px]:col-start-3 min-[1101px]:row-start-1 min-[1101px]:border-t-0 min-[1101px]:border-l min-[1101px]:px-4"

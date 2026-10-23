@@ -3,10 +3,9 @@ import type { Visual } from "@/contracts/project";
 import { VISUAL_SUBDECISIONS, type VisualKey } from "@/domain/decisions";
 import { projectStore } from "@/data/project/store";
 import { ArrowText } from "@/components/wizard/ArrowText";
-import { SubDecisionList } from "@/components/wizard/SubDecisionList";
 import { DensityDecision } from "./density";
 import { FontPairDecision } from "./font-pair";
-import { nextOpenAfter, SUB_KEYS } from "@/domain/decisions";
+import { nextStop, type StopId } from "@/domain/decisions";
 import type { DecisionProps } from "./model";
 import { PaletteDecision } from "./palette";
 import { RadiusDecision } from "./radius";
@@ -28,38 +27,28 @@ const VIEWS: Record<VisualKey, (p: DecisionProps) => React.ReactNode> = {
   density: (p) => <DensityDecision {...p} />,
 };
 
-/** Step 3: one view per sub-decision, in VISUAL_SUBDECISIONS order. */
-export function VisualStep({ sub, visual, productName, onMove }: { sub: VisualKey; visual: Visual; productName: string | null; onMove: (key: VisualKey) => void }) {
-  const index = SUB_KEYS.indexOf(sub);
-  const meta = VISUAL_SUBDECISIONS[index];
+/** The plate stops of the Color, Type and Space & shape labs, one view per sub-decision. Choosing moves on along the path. */
+export function VisualStep({ sub, visual, productName, onMove }: { sub: VisualKey; visual: Visual; productName: string | null; onMove: (id: StopId) => void }) {
+  const meta = VISUAL_SUBDECISIONS.find((s) => s.key === sub) ?? VISUAL_SUBDECISIONS[0];
   const whose = productName ? `${productName}’s` : "your project’s";
 
   const onChoose: DecisionProps["onChoose"] = (key, value) => {
     projectStore().setVisual(key, value);
-    const next = nextOpenAfter(projectStore().getState().project.visual, key);
+    const next = nextStop(`visual.${key}`);
     if (next) onMove(next);
   };
 
   return (
     <>
-      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
-        Step 03 · Visual system · Decision {index + 1} of {SUB_KEYS.length}
-      </p>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
         <ArrowText text={meta.label} />
       </h1>
       <p className="mt-1 max-w-[60ch] text-dw-text-muted">{LEADS[sub](whose)}</p>
 
       <div key={sub}>
-        {VIEWS[sub]({ visual, productName, onChoose })}
+        {VIEWS[sub]({ visual, productName, onChoose, onMove })}
       </div>
 
-      <nav aria-label="Visual decisions" className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
-        <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">All visual decisions</p>
-        <div className="mt-1">
-          <SubDecisionList visual={visual} current={sub} onPick={onMove} />
-        </div>
-      </nav>
     </>
   );
 }

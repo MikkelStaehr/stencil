@@ -168,18 +168,18 @@ test("undo open in a fresh browser removes the autosave it created", () => {
   expect(storage.getItem(STORAGE_KEY)).toBeNull();
 });
 
-test("openDecisionStops lists every open decision in wizard order with the stop that decides it", () => {
+test("openDecisionStops lists every open decision in path order with the stop that decides it (slice 5b)", () => {
   expect(openDecisionStops(emptyProject())).toEqual([
     { label: "Project name", stop: "profile.identity" },
     { label: "Product type", stop: "profile.identity" },
     { label: "Platform", stop: "profile.platform" },
-    { label: "UX principles", stop: "principles" },
+    { label: "Brand colour", stop: "visual.brandHex" },
+    { label: "Palette", stop: "visual.paletteVariant" },
     { label: "Font pair", stop: "visual.fontPair" },
     { label: "Spacing base", stop: "visual.spacingBase" },
     { label: "Radius", stop: "visual.radius" },
-    { label: "Brand colour", stop: "visual.paletteVariant" },
-    { label: "Palette", stop: "visual.paletteVariant" },
     { label: "Density", stop: "visual.density" },
+    { label: "UX principles", stop: "principles" },
   ]);
   const store = createProjectStore(null);
   store.open(harbour);

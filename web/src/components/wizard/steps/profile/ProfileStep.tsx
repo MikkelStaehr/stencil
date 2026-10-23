@@ -5,10 +5,10 @@ import { SHADCN_ROWS } from "@/export/shadcn-map";
 import { PREVIEW_NEUTRALS, resolveForPlate } from "@/domain/tokens/resolve";
 import { PlateGrid } from "@/components/plate/PlateGrid";
 import { PlatformStage } from "@/components/samples/PlatformStage";
-import { StopList } from "@/components/wizard/SubDecisionList";
+import { nextStop, type StopId } from "@/domain/decisions";
 import { fontPairLabel } from "../visual/model";
 import { IdentityStop } from "./identity";
-import { LIBRARY_LABELS, PLATFORM_LABELS, profileRows, type ProfileStop } from "./model";
+import { LIBRARY_LABELS, PLATFORM_LABELS, type ProfileStop } from "./model";
 
 const META: Record<ProfileStop, { index: number; title: string; lead: (whose: string) => string }> = {
   "profile.identity": {
@@ -40,33 +40,28 @@ const LIBRARY_DESCRIPTIONS: Record<ComponentLibrary, string> = {
   none: "Declares your own role names, for Tailwind or plain CSS without shadcn.",
 };
 
-/** Step 1: one view per stop. Choosing moves to the next stop in order, so the pre-selected library is seen once. */
-export function ProfileStep({ stop, project, onMove }: { stop: ProfileStop; project: ProjectFile; onMove: (id: ProfileStop | "principles") => void }) {
+/** The Profile lab's stops, one view each. Choosing moves on along the path, so the pre-selected library is seen once. */
+export function ProfileStep({ stop, project, onMove }: { stop: ProfileStop; project: ProjectFile; onMove: (id: StopId) => void }) {
+  const goOn = () => {
+    const next = nextStop(stop);
+    if (next) onMove(next);
+  };
   const meta = META[stop];
   const productName = project.profile.name;
   const whose = productName ? `${productName}’s` : "your project’s";
   return (
     <>
-      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
-        Step 01 · Project profile · Decision {meta.index} of 3
-      </p>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
         {meta.title}
       </h1>
       <p className="mt-1 max-w-[60ch] text-dw-text-muted">{meta.lead(whose)}</p>
 
       <div key={stop}>
-        {stop === "profile.identity" && <IdentityStop profile={project.profile} visual={project.visual} onDone={() => onMove("profile.platform")} />}
-        {stop === "profile.platform" && <PlatformStop project={project} onChosen={() => onMove("profile.library")} />}
-        {stop === "profile.library" && <LibraryStop project={project} onChosen={() => onMove("principles")} />}
+        {stop === "profile.identity" && <IdentityStop profile={project.profile} visual={project.visual} onDone={goOn} />}
+        {stop === "profile.platform" && <PlatformStop project={project} onChosen={goOn} />}
+        {stop === "profile.library" && <LibraryStop project={project} onChosen={goOn} />}
       </div>
 
-      <nav aria-label="Profile decisions" className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
-        <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">All profile decisions</p>
-        <div className="mt-1">
-          <StopList rows={profileRows(project)} current={stop} onPick={onMove} />
-        </div>
-      </nav>
     </>
   );
 }

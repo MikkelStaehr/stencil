@@ -128,24 +128,47 @@ test("a brand colour change never stores grey preview colours", async () => {
   spy.mockRestore();
 });
 
-test("stops run across steps in wizard order; E finds the nearest decided stop", async () => {
-  const { STOPS, firstOpenStop, isStopDecided, lastDecidedStopBefore, nextStop, prevStop } = await import("@/domain/decisions");
+test("the path runs through the labs in order (12 stops, slice 5b); E finds the nearest decided stop", async () => {
+  const { DECISIONS, LABS, STOPS, firstOpenStop, isStopDecided, labOfStop, lastDecidedStopBefore, nextStop, pathPosition, prevStop, stopsOfLab } =
+    await import("@/domain/decisions");
   expect(STOPS.map((s) => s.id)).toEqual([
-    "profile.identity", "profile.platform", "profile.library", "principles",
-    "visual.fontPair", "visual.spacingBase", "visual.radius", "visual.paletteVariant", "visual.density", "preview", "export",
+    "profile.identity", "profile.platform", "profile.library", "visual.brandHex", "visual.paletteVariant",
+    "visual.fontPair", "visual.spacingBase", "visual.radius", "visual.density", "principles", "preview", "export",
   ]);
+  expect(LABS.map((l) => l.title)).toEqual(["Profile", "Color", "Type", "Space & shape", "Laws", "Preview", "Export"]);
+  // Every stop belongs to a lab, the labs' stops read in path order, and every decision is made on a real stop.
+  expect(LABS.flatMap((l) => stopsOfLab(l.id).map((s) => s.id))).toEqual(STOPS.map((s) => s.id));
+  for (const d of DECISIONS) expect(STOPS.some((s) => s.id === d.stop), d.path).toBe(true);
+  expect(labOfStop("visual.density").title).toBe("Space & shape");
+  expect(pathPosition("visual.brandHex")).toEqual({ n: 4, total: 12 });
   const empty = emptyProject();
+  expect(isStopDecided(empty, "visual.brandHex")).toBe(false);
+  expect(isStopDecided(harbour(), "visual.brandHex")).toBe(true);
   expect(firstOpenStop(empty)).toBe("profile.identity");
   expect(isStopDecided(empty, "profile.library")).toBe(true);
-  expect(nextStop("profile.library")).toBe("principles");
-  expect(prevStop("visual.fontPair")).toBe("principles");
-  expect(nextStop("visual.density")).toBe("preview");
+  expect(nextStop("profile.library")).toBe("visual.brandHex");
+  expect(prevStop("visual.fontPair")).toBe("visual.paletteVariant");
+  expect(nextStop("visual.density")).toBe("principles");
+  expect(nextStop("principles")).toBe("preview");
   expect(nextStop("preview")).toBe("export");
   expect(nextStop("export")).toBeNull();
   expect(isStopDecided(empty, "export")).toBe(true);
   expect(isStopDecided(empty, "preview")).toBe(true);
   expect(lastDecidedStopBefore(empty, "visual.fontPair")).toBe("profile.library");
   expect(firstOpenStop(harbour())).toBeNull();
+});
+
+test("links: ?step= wins, aliases still work, ?lab= opens the lab's first open stop, unknown values are reported", async () => {
+  const { stopFromLink } = await import("@/domain/decisions");
+  const empty = emptyProject();
+  expect(stopFromLink(empty, "visual.palette", null)).toEqual({ stop: "visual.paletteVariant", warning: null });
+  expect(stopFromLink(empty, "visual.spacing", "color")).toEqual({ stop: "visual.spacingBase", warning: null });
+  expect(stopFromLink(empty, null, "color")).toEqual({ stop: "visual.brandHex", warning: null });
+  expect(stopFromLink(harbour(), null, "space")).toEqual({ stop: "visual.spacingBase", warning: null });
+  expect(stopFromLink(empty, "visual.nope", null).stop).toBeNull();
+  expect(stopFromLink(empty, "visual.nope", null).warning).toContain("Unknown ?step=visual.nope");
+  expect(stopFromLink(empty, null, "sound").warning).toContain("Unknown ?lab=sound");
+  expect(stopFromLink(empty, null, null)).toEqual({ stop: null, warning: null });
 });
 
 test("law params parse as typed and report the range in the param's own units", async () => {

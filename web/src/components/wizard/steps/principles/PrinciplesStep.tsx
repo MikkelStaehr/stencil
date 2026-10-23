@@ -209,7 +209,6 @@ export function PrinciplesStep({ project, onMove }: { project: ProjectFile; onMo
 
   return (
     <>
-      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">Step 02 · UX principles</p>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
         UX principles
       </h1>

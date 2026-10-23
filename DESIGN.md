@@ -51,7 +51,7 @@ Contract between `design-lead` (owns this file) and `ui` (builds).
 
 # Part B – Direction (per project)
 
-**Direction: Night shift, Stencil edition (2026-10-21).** A family member of Mainframe's slice 14 look: dark by default, rounded cards, every number in mono, one orange accent; calm, with a little life in hover and status. It replaces "Grading Suite, light by default" (2026-10-01). Build spec: `design/specs/chrome-family.md`. The old records `design/directions/grading-suite-geist.html` and `font-compare.html` stay frozen as history; where they differ, this file counts.
+**Direction: Night shift, Stencil edition (2026-10-21; labs shell added 2026-10-23, see "Shell").** A family member of Mainframe's slice 14 look: dark by default, rounded cards, every number in mono, one orange accent; calm, with a little life in hover and status. It replaces "Grading Suite, light by default" (2026-10-01). Build spec: `design/specs/chrome-family.md`. The old records `design/directions/grading-suite-geist.html` and `font-compare.html` stay frozen as history; where they differ, this file counts.
 
 ## Personality
 **Calm, exact, lit.** The same night-shift room as Mainframe: a near-black field, quiet grey type, and one orange point that says "you are here". Stencil's own trait is the **neutral viewing plate**: the user's variants sit on square, hue-free grey plates with crop marks, so no colour judgement is made against the tool's orange.
@@ -74,7 +74,7 @@ Contract between `design-lead` (owns this file) and `ui` (builds).
 
 ## Signature element(s)
 1. **Viewing plates with crop marks (kept, Stencil's own).** Every variant sits on a `--dw-plate` surround, 18px padding, **0 radius**, with four 12×12px L-shaped crop marks (1px `--dw-text-muted`) inset 6px from the corners. When a variant is selected the marks become 16×16px, 2px brackets in **`--dw-text`** (ink, not orange). Chrome never draws inside the 18px margin's inner edge.
-2. **The lit step (new, the family link).** The rail's current step is the only orange on screen: a 22×22px number chip filled `--dw-accent-fill` with its number in `--dw-on-accent` (Geist Mono 500 11px), plus the 2px `--dw-accent` left rule on the row. Other step numbers are plain muted mono. Shape (filled chip + rule) and position tell "current", not colour alone.
+2. **The lit lab and stop (the family link; labs update 2026-10-23).** The only orange on screen is "you are here" in the rail. The current **lab** gets a 22×22px number chip filled `--dw-accent-fill` with its number in `--dw-on-accent` (Geist Mono 500 11px), plus the 2px `--dw-accent` left rule on the lab row. The current **stop** on the path gets a **6×6px filled square** in `--dw-accent-fill`, radius 0, 6px left of the stop label; the same row also gets the `--dw-selected` fill, a 1px `--dw-ctl` inset outline, `--dw-text` at weight 500 and `aria-current="step"`. Other stops keep the square's 6px slot empty (`visibility: hidden`) so labels align. Other lab numbers are plain muted mono. Shape (chip, rule, square), fill, position and `aria-current` tell "current", never orange alone.
 3. **The hollow mark.** The rail header's 12×12px square, radius 3px, 1.5px `--dw-accent` outline, no fill.
 
 ### Planned v0.2 (not a current signature element, not built in v0.1)
@@ -118,8 +118,8 @@ Two chrome families, both OFL, committed woff2 (latin) under `web/public/fonts/<
 | `--dw-plate` | #333333 *Stencil* | #CCCCCC *Stencil* | viewing plates. Always R=G=B |
 | `--dw-text` | #ECECEE | #1C1A17 | text; primary button fill; selection brackets; field-error rule |
 | `--dw-text-muted` | #9A9AA2 | #655F57 | secondary text, labels, crop marks |
-| `--dw-accent` | #F07A3A | #A8430F | the accent as a line or text: current step rule, hollow mark |
-| `--dw-accent-fill` | #F07A3A | #D45A1F | the current step chip fill |
+| `--dw-accent` | #F07A3A | #A8430F | the accent as a line or text: current lab rule, hollow mark |
+| `--dw-accent-fill` | #F07A3A | #D45A1F | the current lab chip fill; the current stop's 6px square |
 | `--dw-on-accent` | #0C0C0E | #1B1205 | number on the accent fill |
 | `--dw-focus` | #7EA8FF | #1F5FD6 | focus outline only: 2px solid, 2px offset (3px on plates) |
 
@@ -138,9 +138,9 @@ Two chrome families, both OFL, committed woff2 (latin) under `web/public/fonts/<
 | `--dw-focus` (3) | dark | 8.51 | 8.31 | 8.08 | 7.82 | 7.60 | 7.22 | 5.37 |
 | | light | 4.95 | 5.40 | 5.13 | 5.73 | 5.00 | 4.65 | 3.57 |
 
-Other pairs: `--dw-on-accent` on `--dw-accent-fill` 7.03 dark / 4.65 light (≥ 4.5); `--dw-accent-fill` chip on `--dw-rail` 7.19 / 3.43 (≥ 3); primary button text `--dw-bg` on `--dw-text` 16.56 / 16.37; selection brackets `--dw-text` on `--dw-plate` 10.71 / 10.81. `--dw-line` is 1.18 / 1.22 on bg and is never the only cue for anything.
+Other pairs: `--dw-on-accent` on `--dw-accent-fill` 7.03 dark / 4.65 light (≥ 4.5); `--dw-accent-fill` chip on `--dw-rail` 7.19 / 3.43 (≥ 3); `--dw-accent-fill` stop square on `--dw-selected` 6.11 / 3.23 (≥ 3; computed by design-lead on 2026-10-23, ui adds the pair to the same unit test); primary button text `--dw-bg` on `--dw-text` 16.56 / 16.37; selection brackets `--dw-text` on `--dw-plate` 10.71 / 10.81. `--dw-line` is 1.18 / 1.22 on bg and is never the only cue for anything.
 
-- **Accent usage: "you are here".** Only the rail's current step (chip + rule) and the hollow mark. Never buttons, links, selection, hover, headings, errors, PASS/FAIL, focus, or anything on or inside a plate or the live preview. Hue inside the plates and preview comes only from the user's project.
+- **Accent usage: "you are here".** Only the rail's current lab (chip + rule), the current stop on the path (the 6px filled square, always paired with the `--dw-selected` fill and `aria-current="step"`) and the hollow mark. Never buttons, links, selection, hover, headings, errors, PASS/FAIL, focus, or anything on or inside a plate or the live preview. Hue inside the plates and preview comes only from the user's project.
 - **Primary action:** ink-solid (`--dw-text` fill, `--dw-bg` text), as in Mainframe.
 - **Errors:** words first, plus a 2px `--dw-text` rule beside the field and the FAIL tag inverted (ink fill). No red.
 
@@ -164,7 +164,16 @@ Each row reads `<pair name>  <ratio, 2 decimals, tabular>  <tag>`, set in Geist 
 ## Space & density
 - Spacing scale: 4-pt; 4, 8, 12, 16, 20, 24, 32. Card padding 16 (notices 12 × 16).
 - Density: compact. Every clickable or J/K-reachable row is at least 44px. Read-only rows (contrast rows, shortcut legend) may be shorter.
-- Layout at ≥1101px: rail 232px (`--dw-rail`) | main (fluid, 24px padding, `--dw-bg`) | preview 340px (`--dw-aside`). At 761–1100px: rail 200px + main, with the preview below main. At ≤760px: single column, a top bar (Stencil, Step n of 5, theme icons, Open file; it wraps rather than overflows), variants stacked, rail and shortcut legend hidden, primary button full width.
+- Layout at ≥1101px: rail 232px (`--dw-rail`) | work surface (fluid, 24px padding, `--dw-bg`) | side panel 340px (`--dw-aside`: live preview, then the lab's readouts). At 761–1100px: rail 200px + work surface, with the side panel below it. At ≤760px: single column, a top bar (hollow mark + "Stencil · <project name>", "Stop n of 12 · <stop>", theme icons, Open file; it wraps rather than overflows), variants stacked, rail and shortcut legend hidden, primary button full width.
+
+## Shell: labs, stops and the path (2026-10-23, slice 5b)
+The approved pattern is `design/labs/lab-pattern.md` (sketch `design/labs/lab-pattern.html`). Where it and this file differ, this file counts.
+- **Rail = labs with stops.** Seven labs in this order: 01 Profile, 02 Color, 03 Type, 04 Space & shape, 05 Laws, 06 Preview, 07 Export (Motion and Brand get slots later). A lab row (44px button) shows its number, its name (Geist 500) and one summary line ("3 of 3 decided", "4 rules", "Nothing to decide", "Ready" / "n open"). **Only the current lab is expanded** to its stops; a stop row (44px button) shows its label and its value in mono, or `open`. The rail's `nav` is labelled "Labs".
+- **The path has 12 stops** in rail order: Profile (Name & type, Platform, Component library), Color (Brand colour, Palette), Type (Font pair), Space & shape (Spacing, Radius, Density), Laws (Laws), Preview (Sample screen), Export (Files). J/K walk them; the contrast matrix, shades and colour-blindness view are tools in the Color lab, never stops.
+- **Eyebrow** above every h1, in the Label style (so it renders uppercase): `Path · stop n of 12 · <Lab>`, e.g. PATH · STOP 5 OF 12 · COLOR. A lab opened on its own (from 5c) reads `Lab 02 · Color`.
+- **The decision bar is the one place that writes a candidate.** It sits under the plates and holds the stop's one primary (ink-solid): Choose on the path, Use in a lab. Selecting a plate, a tool or a lens only changes what is shown; it never writes the project. Form stops (name and type, brand colour, laws) keep their own commit until their lab is rebuilt.
+- **"Not used yet".** A candidate that is selected but not in the project is always called "not used yet" (never "draft", "unsaved" or "pending"); the one in the project is "in use". The live preview caption says which: "Live preview · Deep, not used yet" or "Live preview · Tinted, in use".
+- **Side panel order:** the live preview on its plate first, then the lab's readouts about the previewed candidate. A readout with nothing to read says why ("Pick a palette to read its contrast.").
 - Variants: 3 equal columns, 20px gap. Reading width of prose ≤ 60ch.
 
 ## Motion
@@ -172,7 +181,7 @@ Tokens from `web/src/domain/motion.ts` (the slice 4a motion laws; same in both t
 - **Hover and press colour** (buttons, rows, theme segments): `duration.fast` 160ms, `ease.standard`.
 - **Selection brackets** (border colour on select): `duration.fast`, `ease.standard`. Size changes are instant.
 - **"Downloaded hh:mm" status:** opacity in, `duration.base` 220ms, `ease.out`.
-- **Instant, by rule:** step and sub-decision changes (they follow J, K, E and Enter, and anything opened by a keyboard shortcut appears at once), the live preview update, the theme switch, focus.
+- **Instant, by rule:** lab and stop changes, including the rail expanding the new lab (no height animation; they follow J, K, E and Enter, and anything opened by a keyboard shortcut appears at once), the live preview update, the theme switch, focus.
 - **Reduced motion:** every transition is instant (the existing global rule). With no movement in the chrome, instant is the gentler path.
 
 ## Iconography & imagery
@@ -186,13 +195,13 @@ Tokens from `web/src/domain/motion.ts` (the slice 4a motion laws; same in both t
 - **Scope:** Channels and bots belong to the later W.A.A.N. control room, not this product. No feeds, channels or bot posts in Design Wizard.
 - **Variants are live, never abstract:** every decision is presented as 2–3 variants side by side, each rendered as real sample UI in its own tokens (not a swatch or a font name alone). The live preview reflects the focused variant plus every earlier decision.
 - **Chrome never contaminates variants:** the wizard's own fonts, accent, radii and **theme** never appear inside a variant frame, and a variant's tokens never leak into the chrome. A plate renders identically in dark and light.
-- **Every decision is editable later:** earlier steps and sub-decisions stay visible with their current value and can be edited in place (`E`) without losing later decisions.
-- **Keyboard flow:** `1`/`2`/`3` pick a variant, `J`/`K` next/previous decision, `E` edit an earlier step, `Enter` choose, `⌘K`/`Ctrl+K` command bar. Shortcut hints are always visible on desktop, never on hover only.
-- **Contrast check is a product feature:** each palette variant shows its ratios as numbers with the words PASS/FAIL (not colour alone). Only palettes where every checked pair passes AA are offered. "Apply fix" is cut from v0.1.
+- **Every decision is editable later:** every lab keeps its summary in the rail, the current lab's stops show their values, and any stop can be reopened in place (`E`, or a click) without losing later decisions.
+- **Keyboard flow:** `1`/`2`/`3` pick a variant, `J`/`K` next/previous stop (all 12, in rail order), `E` reopen the last decision, `Enter` choose, `⌘K`/`Ctrl+K` command bar. Shortcut hints are always visible on desktop, never on hover only.
+- **Contrast check is a product feature:** each palette variant shows its result under its plate (`<n> of <m> pass`, counted from the same check, never typed), and the previewed palette shows every ratio as a number with the words PASS/FAIL in the side panel readout (not colour alone). Only palettes where every checked pair passes AA are offered. "Apply fix" is cut from v0.1.
 - **Variants never inherit chrome tokens.** Variant and preview content is styled only from the user's project tokens, scoped to the variant container; no chrome CSS variable, font or radius may cascade into it.
 - **Font limit scope:** "max 2 families" applies to the chrome only (Geist + Geist Mono), not to variant content, which renders whatever font pair the user picks.
 - **Glyph rule:** never use characters outside the shipped font subsets. Arrows are inline SVG with a visually hidden text label. Ticks and crosses are words (PASS/FAIL) or CSS shapes. Verify with a font check that every chrome node renders in web fonts only.
 - **Platform-aware shortcut labels:** "Ctrl" on Windows and Linux; "⌘" only on macOS, and only if the glyph is covered by the shipped font. Key names are words ("Enter", "Ctrl").
 - **Shortcut legend lives in the rail footer** on desktop, always visible, never hover-only.
 - **44px rows:** any row that can be clicked or reached with J/K is at least 44px tall.
-- **One accent, in the rail only.** Orange means "you are here" and never appears on, in or next to a plate or the live preview.
+- **One accent, in the rail only.** Orange means "you are here" (current lab chip and rule, current stop square, hollow mark) and never appears on, in or next to a plate or the live preview. At ≤760px only the hollow mark in the top bar remains; the stop list at the end of the work surface marks the current stop with fill, outline and `aria-current` only.

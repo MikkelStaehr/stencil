@@ -33,7 +33,7 @@ interface PlateGridProps<Id extends string> {
   onChoose: (id: Id) => void;
   /** "panel": the tool's own output (chrome fill, no variant root, no font loading), 2 columns. */
   frame?: "plate" | "panel";
-  /** Status line once a choosable option is selected; defaults to "moves to the next open decision". */
+  /** Status line once a choosable option is selected; defaults to "moves on to the next stop". */
   status?: string;
   /** A line under the options, above the choose bar. */
   note?: ReactNode;
@@ -200,7 +200,7 @@ export function PlateGrid<Id extends string>({ label, decision, options, chosenI
             ? `Pick a ${decision} variant with a number key or a click.`
             : selectedFailed
               ? `${selected.label} can't be chosen: its fonts failed to load.`
-              : (status ?? `Choosing records the ${decision} and moves to the next open decision. You can change it later.`)}
+              : (status ?? `Choosing records the ${decision} and moves on to the next stop. You can change it later.`)}
         </p>
         <button
           type="button"

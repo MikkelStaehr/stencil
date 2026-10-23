@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type { ProjectFile } from "@/contracts/project";
-import { SUB_KEYS, VISUAL_SUBDECISIONS, type StopId } from "@/domain/decisions";
+import { nextStop, SUB_KEYS, VISUAL_SUBDECISIONS, type StopId } from "@/domain/decisions";
 import { PreviewPlate } from "@/components/wizard/LivePreview";
 import { ArrowText } from "@/components/wizard/ArrowText";
 import { valueLabel } from "@/components/wizard/steps/visual/model";
@@ -19,7 +19,7 @@ export function PreviewStep({ project, onMove }: { project: ProjectFile; onMove:
     })),
   ];
 
-  // Enter outside a button, summary or field continues to step 5 (at 390 there is no rail and no J key).
+  // Enter outside a button, summary or field goes on along the path (at 390 there is no rail and no J key).
   const moveRef = useRef(onMove);
   useEffect(() => {
     moveRef.current = onMove;
@@ -28,7 +28,8 @@ export function PreviewStep({ project, onMove }: { project: ProjectFile; onMove:
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.repeat || ownsKey(e.target, e.key)) return;
       e.preventDefault();
-      moveRef.current("export");
+      const next = nextStop("preview");
+      if (next) moveRef.current(next);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -36,7 +37,6 @@ export function PreviewStep({ project, onMove }: { project: ProjectFile; onMove:
 
   return (
     <>
-      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">Step 04 · Live preview</p>
       <h1 id="stop-title" tabIndex={-1} className="mt-1.5 text-title font-semibold tracking-[-0.025em]">
         Live preview
       </h1>
@@ -78,7 +78,10 @@ export function PreviewStep({ project, onMove }: { project: ProjectFile; onMove:
       <button
         type="button"
         data-primary-action=""
-        onClick={() => onMove("export")}
+        onClick={() => {
+          const next = nextStop("preview");
+          if (next) onMove(next);
+        }}
         className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2.5 rounded-sm bg-primary px-4 font-semibold whitespace-nowrap text-primary-foreground min-[761px]:w-auto"
       >
         Continue to export
