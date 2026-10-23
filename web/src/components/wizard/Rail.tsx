@@ -117,8 +117,10 @@ export function LabOverview({ project, stop, onPick }: { project: ProjectFile; s
   const current = labOfStop(stop).id;
   const openCount = openDecisions(project).length;
   return (
-    <nav aria-label="All labs" className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
-      <p className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">All labs</p>
+    <nav aria-labelledby="all-labs-title" className="mt-6 border-t border-dw-line pt-3 min-[761px]:hidden">
+      <p id="all-labs-title" className="font-mono text-label font-medium tracking-[0.08em] text-dw-text-muted uppercase">
+        All labs
+      </p>
       <ol className="mt-1 flex flex-col">
         {LABS.map((lab) => {
           const isCurrent = lab.id === current;

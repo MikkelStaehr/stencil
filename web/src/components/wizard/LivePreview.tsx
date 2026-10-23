@@ -5,7 +5,7 @@ import { isDecided, SUB_KEYS } from "@/domain/decisions";
 import { Plate } from "@/components/plate/Plate";
 import { SampleScreen } from "@/components/samples/SampleScreen";
 import { fontPairLabel, previewPart, valueLabel } from "./steps/visual/model";
-import { usePreviewCandidate, type PreviewCandidate } from "./preview-candidate";
+import { isCandidateInUse, usePreviewCandidate, type PreviewCandidate } from "./preview-candidate";
 
 /** The decisions made so far with the candidate on top: what the preview plate renders. */
 export function withCandidate(visual: Visual, candidate: PreviewCandidate | null): Visual {
@@ -49,7 +49,7 @@ export function LivePreview({ visual, productName }: { visual: Visual; productNa
   const candidate = usePreviewCandidate();
   // A candidate is named and says whether the project already uses it (design/specs/lab-shell.md §3, the 5a decision).
   const what = candidate
-    ? `${valueLabel(withCandidate(visual, candidate), candidate.key)}, ${visual[candidate.key] === candidate.value ? "in use" : "not used yet"}`
+    ? `${valueLabel(withCandidate(visual, candidate), candidate.key)}, ${isCandidateInUse(visual, candidate) ? "in use" : "not used yet"}`
     : SUB_KEYS.some((k) => isDecided(visual, k))
       ? "Your choices"
       : "Neutrals";

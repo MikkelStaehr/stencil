@@ -76,7 +76,7 @@ export function WizardShell() {
 
   return (
     <div className="min-h-dvh min-[761px]:grid min-[761px]:grid-cols-[200px_minmax(0,1fr)] min-[1101px]:grid-cols-[232px_minmax(0,1fr)_340px]">
-      <header className="flex min-h-11 flex-wrap items-center justify-between gap-y-2 border-b border-dw-line bg-dw-rail px-4 min-[761px]:hidden">
+      <header className="flex min-h-11 flex-wrap items-center justify-between gap-y-2 border-b border-dw-line bg-dw-rail px-4 py-2 min-[761px]:hidden">
         <span className="flex min-w-0 items-center gap-2 font-mono text-label font-medium tracking-[0.08em] uppercase">
           <span aria-hidden="true" className="inline-block size-3 shrink-0 rounded-2xs border-[1.5px] border-dw-accent" />
           <span className="truncate">Stencil{productName ? ` · ${productName}` : ""}</span>

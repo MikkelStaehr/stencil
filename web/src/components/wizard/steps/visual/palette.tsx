@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { Visual } from "@/contracts/project";
-import { nextStop, type StopId } from "@/domain/decisions";
+import { nextStop, pathPosition, type StopId } from "@/domain/decisions";
 import { palettes, PALETTE_LABELS } from "@/domain/color/palette";
 import { checkPairs } from "@/domain/color/pairs";
 import { parseHexInput } from "@/domain/parse-input";
@@ -148,7 +148,7 @@ export function PaletteDecision({ visual, productName, onChoose, onMove }: Decis
       {/* The brand colour is read-only here (5a decision); it is changed on its own stop (design/specs/lab-shell.md §3). */}
       {brand === null ? (
         <div className="mt-5 flex flex-col items-start gap-3 border border-dashed border-dw-ctl px-4 py-6 text-dw-text-muted">
-          <p>Enter the brand colour at stop 4 to see three palettes built from it, each with its contrast checked.</p>
+          <p>Enter the brand colour at stop {pathPosition("visual.brandHex").n} to see three palettes built from it, each with its contrast checked.</p>
           <button type="button" onClick={() => onMove("visual.brandHex")} className={SECONDARY}>
             Go to Brand colour
           </button>
@@ -163,7 +163,7 @@ export function PaletteDecision({ visual, productName, onChoose, onMove }: Decis
       )}
       {brand === null ? null : options.length === 0 ? (
         <p role="status" className="mt-5 border border-dashed border-dw-ctl px-4 py-6 text-dw-text-muted">
-          No palette built from {brand} passes every contrast pair. Try a darker or lighter brand colour at stop 4.
+          No palette built from {brand} passes every contrast pair. Try a darker or lighter brand colour at stop {pathPosition("visual.brandHex").n}.
         </p>
       ) : (
         <PlateGrid

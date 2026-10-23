@@ -366,8 +366,10 @@ test("44px: rows, Download buttons, summaries, Open buttons and the bar button; 
     const r = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement;
       const barEl = document.querySelector("main [data-primary-action]")!.parentElement!;
-      // The ≤760px lab overview (5b2) comes after the step, below the bar's container, so the bar can't cover it.
-      if (barEl.contains(el) || !el.closest("main") || el.closest('nav[aria-label="All labs"]')) return null;
+      // The ≤760px lab overview (5b2) follows the bar in the page; a bottom-0 sticky bar only ever moves up from its
+      // place in the flow, so it can never cover what comes after it. The check below (bottom above the bar) is for
+      // what comes before the bar.
+      if (barEl.contains(el) || !el.closest("main") || el.closest('nav[aria-labelledby="all-labs-title"]')) return null;
       const outline = getComputedStyle(el).outlineStyle;
       return { name: el.textContent?.trim().slice(0, 30), bottom: el.getBoundingClientRect().bottom, barTop: barEl.getBoundingClientRect().top, outline };
     });

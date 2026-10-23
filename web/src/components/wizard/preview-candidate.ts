@@ -11,6 +11,11 @@ export type PreviewCandidate = {
   [K in VisualKey]: { key: K; value: NonNullable<Visual[K]> };
 }[VisualKey];
 
+/** Whether the project already uses the candidate's value (the caption's "in use"). Values are strings or numbers, so radius 0 compares as 0. */
+export function isCandidateInUse(visual: Visual, candidate: PreviewCandidate): boolean {
+  return visual[candidate.key] === candidate.value;
+}
+
 let current: PreviewCandidate | null = null;
 const listeners = new Set<() => void>();
 
